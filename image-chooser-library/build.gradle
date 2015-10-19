@@ -2,8 +2,8 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven'
 apply plugin: 'signing'
 
-version = "1.5.0"
-group = "com.kbeanie"
+def version = "1.6.1"
+def group = "com.seniordev" //"com.kbeanie"
 
 configurations {
     archives {
@@ -38,7 +38,8 @@ uploadArchives {
             name 'Image Chooser Library'
             packaging 'aar'
             description 'Image Chooser Library for Android Applications'
-            url 'https://github.com/coomar2841/image-chooser-library'
+            //url 'https://github.com/coomar2841/image-chooser-library'
+            url 'https://github.com/tha022/image-chooser-library'
 
             scm {
                 url                 scmUrl
