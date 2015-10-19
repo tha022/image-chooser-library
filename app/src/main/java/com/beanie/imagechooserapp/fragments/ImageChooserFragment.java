@@ -21,14 +21,16 @@ import com.beanie.imagechooserapp.R;
 import com.crashlytics.android.Crashlytics;
 import com.kbeanie.imagechooser.api.ChooserType;
 import com.kbeanie.imagechooser.api.ChosenImage;
+import com.kbeanie.imagechooser.api.ChosenVideo;
 import com.kbeanie.imagechooser.api.ImageChooserListener;
 import com.kbeanie.imagechooser.api.ImageChooserManager;
+import com.kbeanie.imagechooser.api.MediaChooserListener;
 
 import java.io.File;
 
 @SuppressLint("NewApi")
 public class ImageChooserFragment extends Fragment implements
-        ImageChooserListener {
+        MediaChooserListener {
     private ImageChooserManager imageChooserManager;
     private int chooserType;
     private String mediaPath;
@@ -77,7 +79,7 @@ public class ImageChooserFragment extends Fragment implements
         chooserType = ChooserType.REQUEST_CAPTURE_PICTURE;
         imageChooserManager = new ImageChooserManager(this,
                 ChooserType.REQUEST_CAPTURE_PICTURE, true);
-        imageChooserManager.setImageChooserListener(this);
+        imageChooserManager.setMediaChooserListener(this);
         try {
             mediaPath = imageChooserManager.choose();
         } catch (IllegalArgumentException e) {
@@ -91,7 +93,7 @@ public class ImageChooserFragment extends Fragment implements
         chooserType = ChooserType.REQUEST_PICK_PICTURE;
         imageChooserManager = new ImageChooserManager(this,
                 ChooserType.REQUEST_PICK_PICTURE, true);
-        imageChooserManager.setImageChooserListener(this);
+        imageChooserManager.setMediaChooserListener(this);
         try {
             mediaPath = imageChooserManager.choose();
         } catch (IllegalArgumentException e) {
@@ -121,7 +123,7 @@ public class ImageChooserFragment extends Fragment implements
         if (resultCode == Activity.RESULT_OK) {
             if (imageChooserManager == null) {
                 imageChooserManager = new ImageChooserManager(this, requestCode, true);
-                imageChooserManager.setImageChooserListener(this);
+                imageChooserManager.setMediaChooserListener(this);
                 imageChooserManager.reinitialize(mediaPath);
             }
             imageChooserManager.submit(requestCode, data);
@@ -144,6 +146,11 @@ public class ImageChooserFragment extends Fragment implements
                 }
             }
         });
+    }
+
+    @Override
+    public void onVideoChosen(ChosenVideo video) {
+
     }
 
     @Override

@@ -40,13 +40,15 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.kbeanie.imagechooser.api.ChooserType;
 import com.kbeanie.imagechooser.api.ChosenImage;
+import com.kbeanie.imagechooser.api.ChosenVideo;
 import com.kbeanie.imagechooser.api.ImageChooserListener;
 import com.kbeanie.imagechooser.api.ImageChooserManager;
+import com.kbeanie.imagechooser.api.MediaChooserListener;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 public class ImageChooserActivity extends BasicActivity implements
-        ImageChooserListener {
+        MediaChooserListener {
 
     private final static String TAG = "ICA";
 
@@ -107,7 +109,7 @@ public class ImageChooserActivity extends BasicActivity implements
         chooserType = ChooserType.REQUEST_PICK_PICTURE;
         imageChooserManager = new ImageChooserManager(this,
                 ChooserType.REQUEST_PICK_PICTURE, true);
-        imageChooserManager.setImageChooserListener(this);
+        imageChooserManager.setMediaChooserListener(this);
         try {
             pbar.setVisibility(View.VISIBLE);
             filePath = imageChooserManager.choose();
@@ -122,7 +124,7 @@ public class ImageChooserActivity extends BasicActivity implements
         chooserType = ChooserType.REQUEST_CAPTURE_PICTURE;
         imageChooserManager = new ImageChooserManager(this,
                 ChooserType.REQUEST_CAPTURE_PICTURE, true);
-        imageChooserManager.setImageChooserListener(this);
+        imageChooserManager.setMediaChooserListener(this);
         try {
             pbar.setVisibility(View.VISIBLE);
             filePath = imageChooserManager.choose();
@@ -194,6 +196,11 @@ public class ImageChooserActivity extends BasicActivity implements
     }
 
     @Override
+    public void onVideoChosen(ChosenVideo video) {
+
+    }
+
+    @Override
     public void onError(final String reason) {
         runOnUiThread(new Runnable() {
 
@@ -211,7 +218,7 @@ public class ImageChooserActivity extends BasicActivity implements
     // to destroying of activity for low memory situations)
     private void reinitializeImageChooser() {
         imageChooserManager = new ImageChooserManager(this, chooserType, true);
-        imageChooserManager.setImageChooserListener(this);
+        imageChooserManager.setMediaChooserListener(this);
         imageChooserManager.reinitialize(filePath);
     }
 

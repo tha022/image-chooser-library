@@ -33,12 +33,14 @@ import android.widget.VideoView;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.kbeanie.imagechooser.api.ChooserType;
+import com.kbeanie.imagechooser.api.ChosenImage;
 import com.kbeanie.imagechooser.api.ChosenVideo;
+import com.kbeanie.imagechooser.api.MediaChooserListener;
 import com.kbeanie.imagechooser.api.VideoChooserListener;
 import com.kbeanie.imagechooser.api.VideoChooserManager;
 
 public class VideoChooserActivity extends BasicActivity implements
-        VideoChooserListener {
+        MediaChooserListener {
     private VideoChooserManager videoChooserManager;
 
     private ProgressBar pbar;
@@ -73,7 +75,7 @@ public class VideoChooserActivity extends BasicActivity implements
         chooserType = ChooserType.REQUEST_CAPTURE_VIDEO;
         videoChooserManager = new VideoChooserManager(this,
                 ChooserType.REQUEST_CAPTURE_VIDEO);
-        videoChooserManager.setVideoChooserListener(this);
+        videoChooserManager.setMediaChooserListener(this);
         try {
             pbar.setVisibility(View.VISIBLE);
             filePath = videoChooserManager.choose();
@@ -88,7 +90,7 @@ public class VideoChooserActivity extends BasicActivity implements
         chooserType = ChooserType.REQUEST_PICK_VIDEO;
         videoChooserManager = new VideoChooserManager(this,
                 ChooserType.REQUEST_PICK_VIDEO);
-        videoChooserManager.setVideoChooserListener(this);
+        videoChooserManager.setMediaChooserListener(this);
         try {
             videoChooserManager.choose();
             pbar.setVisibility(View.VISIBLE);
@@ -117,6 +119,11 @@ public class VideoChooserActivity extends BasicActivity implements
                 }
             }
         });
+    }
+
+    @Override
+    public void onImageChosen(ChosenImage image) {
+
     }
 
     @Override
@@ -149,7 +156,7 @@ public class VideoChooserActivity extends BasicActivity implements
     // to destroying of activity for low memory situations)
     private void reinitializeVideoChooser() {
         videoChooserManager = new VideoChooserManager(this, chooserType, true);
-        videoChooserManager.setVideoChooserListener(this);
+        videoChooserManager.setMediaChooserListener(this);
         videoChooserManager.reinitialize(filePath);
     }
 

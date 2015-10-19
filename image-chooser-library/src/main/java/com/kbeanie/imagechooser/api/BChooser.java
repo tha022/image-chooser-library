@@ -60,6 +60,9 @@ public abstract class BChooser {
 
     protected Bundle extras;
 
+    protected MediaChooserListener listener;
+
+
     @Deprecated
     public BChooser(Activity activity, int type, String folderName,
                     boolean shouldCreateThumbnails) {
@@ -249,6 +252,16 @@ public abstract class BChooser {
         }
 
         return 0;
+    }
+
+    /**
+     * Set a listener, to get callbacks when the videos and the thumbnails are
+     * processed
+     *
+     * @param listener
+     */
+    public void setMediaChooserListener(MediaChooserListener listener) {
+        this.listener = listener;
     }
 
     private void initDirector(Context context){

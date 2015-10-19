@@ -44,7 +44,8 @@ public class VideoChooserManager extends BChooser implements
 
     private final static String TAG = VideoChooserManager.class.getSimpleName();
 
-    private VideoChooserListener listener;
+
+    //private VideoChooserListener listener;
 
     /**
      * Simplest constructor. Specify the type
@@ -120,9 +121,9 @@ public class VideoChooserManager extends BChooser implements
      *
      * @param listener
      */
-    public void setVideoChooserListener(VideoChooserListener listener) {
+    /*public void setVideoChooserListener(VideoChooserListener listener) {
         this.listener = listener;
-    }
+    }*/
 
     @Override
     public String choose() throws ChooserException {

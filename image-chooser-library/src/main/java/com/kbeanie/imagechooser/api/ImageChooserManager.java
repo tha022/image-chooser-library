@@ -43,7 +43,7 @@ public class ImageChooserManager extends BChooser implements
 
     private final static String TAG = ImageChooserManager.class.getSimpleName();
 
-    private ImageChooserListener listener;
+    //private ImageChooserListener listener;
 
     /**
      * Simplest constructor. Specify the type
@@ -188,11 +188,10 @@ public class ImageChooserManager extends BChooser implements
      * Set a listener, to get callbacks when the images and the thumbnails are
      * processed
      *
-     * @param listener
      */
-    public void setImageChooserListener(ImageChooserListener listener) {
+    /*public void setImageChooserListener(ImageChooserListener listener) {
         this.listener = listener;
-    }
+    }*/
 
     @Override
     public String choose() throws ChooserException {
