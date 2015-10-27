@@ -6,8 +6,6 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -15,7 +13,6 @@ import android.os.ParcelFileDescriptor;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -30,7 +27,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 import java.util.Calendar;
 import java.util.Locale;
 
@@ -51,19 +47,10 @@ public class MediaResourceUtils {
     // Number of days to preserve 10 days
     protected final static int MAX_THRESHOLD_DAYS = (int) (10 * 24 * 60 * 60 * 1000);
 
-    private static MediaResourceUtils instance;
-
-    public static MediaResourceUtils getInstance(Context context) {
-        if(instance == null) {
-            instance = new MediaResourceUtils(context);
-        }
-        return instance;
-    }
-
     private Context context;
     private ContentResolver contentResolver;
 
-    private MediaResourceUtils(Context context) {
+    public MediaResourceUtils(Context context) {
         this.context = context;
         this.contentResolver = context.getContentResolver();
     }

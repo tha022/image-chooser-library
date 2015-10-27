@@ -22,14 +22,11 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
-import android.util.Log;
 
-import com.kbeanie.imagechooser.BuildConfig;
 import com.kbeanie.imagechooser.exceptions.ChooserException;
 import com.kbeanie.imagechooser.helpers.MediaHelper;
 import com.kbeanie.imagechooser.listeners.MediaChooserListener;
@@ -233,11 +230,8 @@ public class MediaChooserManager extends BChooser implements VideoProcessorListe
                 return;
             }
 
-            //String ronkPath = Uri.parse(path).getPath();
-            //Log.i(TAG, "ronkPath = "+ronkPath);
-
             VideoProcessorThread thread = new VideoProcessorThread(
-                    MediaResourceUtils.getInstance(getContext()),
+                    new MediaResourceUtils(getContext()),
                     path, foldername);
             thread.setListener(this);
             thread.start();
@@ -254,10 +248,9 @@ public class MediaChooserManager extends BChooser implements VideoProcessorListe
         } else {
             path = filePathOriginal;
         }
-        // String ronkPath = Uri.parse(path).getPath();
-        // Log.i(TAG, "ronkPath = "+ronkPath);
+
         VideoProcessorThread thread = new VideoProcessorThread(
-                MediaResourceUtils.getInstance(getContext()),
+                new MediaResourceUtils(getContext()),
                 path,
                 foldername);
         thread.setListener(this);
@@ -284,18 +277,3 @@ public class MediaChooserManager extends BChooser implements VideoProcessorListe
         }
     }
 }
-
-
-/*private void chooseMedia() throws ChooserException {
-        checkDirectory();
-        try {
-            Intent intent = new Intent(Intent.ACTION_PICK);
-            if (extras != null) {
-                intent.putExtras(extras);
-            }
-            intent.setType("video/*, image/*");
-            startActivity(intent);
-        } catch (ActivityNotFoundException e) {
-            throw new ChooserException(e);
-        }
-    }*/
