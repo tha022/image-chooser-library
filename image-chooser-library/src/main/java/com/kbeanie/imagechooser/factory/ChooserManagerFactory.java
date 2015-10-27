@@ -32,7 +32,7 @@ public class ChooserManagerFactory {
             case ChooserType.REQUEST_CAPTURE_VIDEO:
             case ChooserType.REQUEST_PICK_PICTURE:
             case ChooserType.REQUEST_CAPTURE_PICTURE:
-                manager = new MediaChooserManager(activity, type);
+                manager = new MediaChooserManager(activity);
                 break;
             default:
                 throw new CreationException("Not valid type = "+type);

@@ -50,7 +50,7 @@ public abstract class BChooser {
 
     protected Fragment fragment;
     protected android.app.Fragment appFragment;
-    protected int type;
+    //protected int type;
     protected String foldername;
     protected String filePathOriginal;
     protected Bundle extras;
@@ -58,22 +58,19 @@ public abstract class BChooser {
     protected MediaChooserListener listener;
 
 
-    public BChooser(Activity activity, int type) {
+    public BChooser(Activity activity) {
         this.activity = activity;
-        this.type = type;
         initDirector(activity.getApplicationContext());
     }
 
-    public BChooser(Fragment fragment, int type) {
+    public BChooser(Fragment fragment) {
         this.fragment = fragment;
-        this.type = type;
         initDirector(fragment.getActivity().getApplicationContext());
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public BChooser(android.app.Fragment fragment, int type) {
+    public BChooser(android.app.Fragment fragment) {
         this.appFragment = fragment;
-        this.type = type;
         initDirector(fragment.getActivity().getApplicationContext());
     }
 
@@ -93,7 +90,7 @@ public abstract class BChooser {
      * @throws IllegalArgumentException
      * @throws Exception
      */
-    public abstract String choose() throws ChooserException;
+    public abstract String choose(int type) throws ChooserException;
 
     /**
      * Call this method to process the result from within your onActivityResult
@@ -116,13 +113,13 @@ public abstract class BChooser {
     }
 
     @SuppressLint("NewApi")
-    protected void startActivity(Intent intent) {
+    protected void startActivity(Intent intent, int requestCode) {
         if (activity != null) {
-            activity.startActivityForResult(intent, type);
+            activity.startActivityForResult(intent, requestCode);
         } else if (fragment != null) {
-            fragment.startActivityForResult(intent, type);
+            fragment.startActivityForResult(intent, requestCode);
         } else if (appFragment != null) {
-            appFragment.startActivityForResult(intent, type);
+            appFragment.startActivityForResult(intent, requestCode);
         }
     }
 

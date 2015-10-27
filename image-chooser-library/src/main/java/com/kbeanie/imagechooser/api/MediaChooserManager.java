@@ -57,18 +57,17 @@ public class MediaChooserManager extends BChooser implements VideoProcessorListe
      * {@link ChooserType}
      *
      * @param activity
-     * @param type
      */
-    public MediaChooserManager(Activity activity, int type) {
-        super(activity, type);
+    public MediaChooserManager(Activity activity) {
+        super(activity);
     }
 
-    public MediaChooserManager(Fragment fragment, int type) {
-        super(fragment, type);
+    public MediaChooserManager(Fragment fragment) {
+        super(fragment);
     }
 
-    public MediaChooserManager(android.app.Fragment fragment, int type) {
-        super(fragment, type);
+    public MediaChooserManager(android.app.Fragment fragment) {
+        super(fragment);
     }
 
     /**
@@ -82,38 +81,39 @@ public class MediaChooserManager extends BChooser implements VideoProcessorListe
     }
 
     @Override
-    public String choose() throws ChooserException {
+    public String choose(int requestCode) throws ChooserException {
         if (listener == null) {
             throw new ChooserException(
                     "MediaChooserListener cannot be null. Forgot to set MediaChooserListener???");
         }
-        switch (type) {
+        //this.type = type;
+        switch (requestCode) {
             case ChooserType.REQUEST_PICK_PICTURE:
-                pickImage();
+                pickImage(requestCode);
                 return null;
             case ChooserType.REQUEST_CAPTURE_PICTURE:
-                this.filePathOriginal = capturePicture();
+                this.filePathOriginal = capturePicture(requestCode);
                 return filePathOriginal;
             case ChooserType.REQUEST_PICK_VIDEO:
-                pickVideo();
+                pickVideo(requestCode);
                 return null;
             case ChooserType.REQUEST_CAPTURE_VIDEO:
-                this.filePathOriginal = captureVideo();
+                this.filePathOriginal = captureVideo(requestCode);
                 return filePathOriginal;
             default:
-                throw new ChooserException(String.format("Unknown request type = %s", type));
+                throw new ChooserException(String.format("Unknown requestCode = %s", requestCode));
         }
     }
 
-    private void pickImage() throws ChooserException {
-        pickMedia("image/*");
+    private void pickImage(int requestCode) throws ChooserException {
+        pickMedia("image/*", requestCode);
     }
 
-    private void pickVideo() throws ChooserException {
-        pickMedia("video/*");
+    private void pickVideo(int requestCode) throws ChooserException {
+        pickMedia("video/*", requestCode);
     }
 
-    private void pickMedia(String type) throws ChooserException {
+    private void pickMedia(String type, int requestCode) throws ChooserException {
         checkDirectory();
         try {
             Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
@@ -121,13 +121,13 @@ public class MediaChooserManager extends BChooser implements VideoProcessorListe
                 intent.putExtras(extras);
             }
             intent.setType(type);
-            startActivity(intent);
+            startActivity(intent, requestCode);
         } catch (ActivityNotFoundException e) {
             throw new ChooserException(e);
         }
     }
 
-    private String capturePicture() throws ChooserException {
+    private String capturePicture(int requestCode) throws ChooserException {
         checkDirectory();
         try {
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -136,7 +136,7 @@ public class MediaChooserManager extends BChooser implements VideoProcessorListe
             if (extras != null) {
                 intent.putExtras(extras);
             }
-            startActivity(intent);
+            startActivity(intent, requestCode);
 
             return path;
         } catch (ActivityNotFoundException e) {
@@ -144,17 +144,17 @@ public class MediaChooserManager extends BChooser implements VideoProcessorListe
         }
     }
 
-    private String captureVideo() throws ChooserException {
+    private String captureVideo(int requestCode) throws ChooserException {
         int sdk = Build.VERSION.SDK_INT;
         if (sdk >= Build.VERSION_CODES.GINGERBREAD
                 && sdk <= Build.VERSION_CODES.GINGERBREAD_MR1) {
-            return captureVideoPatchedMethodForGingerbread();
+            return captureVideoPatchedMethodForGingerbread(requestCode);
         } else {
-            return captureVideoCurrent();
+            return captureVideoCurrent(requestCode);
         }
     }
 
-    private String captureVideoCurrent() throws ChooserException {
+    private String captureVideoCurrent(int requestCode) throws ChooserException {
         checkDirectory();
         try {
             Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
@@ -163,7 +163,7 @@ public class MediaChooserManager extends BChooser implements VideoProcessorListe
             if (extras != null) {
                 intent.putExtras(extras);
             }
-            startActivity(intent);
+            startActivity(intent, requestCode);
 
             return path;
         } catch (ActivityNotFoundException e) {
@@ -171,13 +171,13 @@ public class MediaChooserManager extends BChooser implements VideoProcessorListe
         }
     }
 
-    private String captureVideoPatchedMethodForGingerbread() throws ChooserException {
+    private String captureVideoPatchedMethodForGingerbread(int requestCode) throws ChooserException {
         try {
             Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
             if (extras != null) {
                 intent.putExtras(extras);
             }
-            startActivity(intent);
+            startActivity(intent, requestCode);
             return null;
         } catch (ActivityNotFoundException e) {
             throw new ChooserException(e);

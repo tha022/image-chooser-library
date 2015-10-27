@@ -69,12 +69,11 @@ public class VideoChooserActivity extends BasicActivity implements
 
     public void captureVideo(View view) {
         chooserType = ChooserType.REQUEST_CAPTURE_VIDEO;
-        videoChooserManager = new MediaChooserManager(this,
-                ChooserType.REQUEST_CAPTURE_VIDEO);
+        videoChooserManager = new MediaChooserManager(this);
         videoChooserManager.setMediaChooserListener(this);
         try {
             pbar.setVisibility(View.VISIBLE);
-            filePath = videoChooserManager.choose();
+            filePath = videoChooserManager.choose(ChooserType.REQUEST_CAPTURE_VIDEO);
             Log.d(TAG, "filePath = "+filePath);
         } catch (ChooserException e) {
             Log.e(TAG, e.getMessage(), e);
@@ -83,11 +82,10 @@ public class VideoChooserActivity extends BasicActivity implements
 
     public void pickVideo(View view) {
         chooserType = ChooserType.REQUEST_PICK_VIDEO;
-        videoChooserManager = new MediaChooserManager(this,
-                ChooserType.REQUEST_PICK_VIDEO);
+        videoChooserManager = new MediaChooserManager(this);
         videoChooserManager.setMediaChooserListener(this);
         try {
-            videoChooserManager.choose();
+            videoChooserManager.choose(ChooserType.REQUEST_PICK_VIDEO);
             pbar.setVisibility(View.VISIBLE);
         } catch (ChooserException e) {
             Log.e(TAG, e.getMessage(), e);
@@ -150,7 +148,7 @@ public class VideoChooserActivity extends BasicActivity implements
     // Should be called if for some reason the VideoChooserManager is null (Due
     // to destroying of activity for low memory situations)
     private void reinitializeVideoChooser() {
-        videoChooserManager = new MediaChooserManager(this, chooserType);
+        videoChooserManager = new MediaChooserManager(this);
         videoChooserManager.setMediaChooserListener(this);
         videoChooserManager.reinitialize(filePath);
     }

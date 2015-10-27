@@ -68,11 +68,10 @@ public class ImageChooserFragment extends Fragment implements
 
     private void takePicture() {
         chooserType = ChooserType.REQUEST_CAPTURE_PICTURE;
-        imageChooserManager = new MediaChooserManager(this,
-                ChooserType.REQUEST_CAPTURE_PICTURE);
+        imageChooserManager = new MediaChooserManager(this);
         imageChooserManager.setMediaChooserListener(this);
         try {
-            mediaPath = imageChooserManager.choose();
+            mediaPath = imageChooserManager.choose(ChooserType.REQUEST_CAPTURE_PICTURE);
         } catch (ChooserException e) {
             Log.e(TAG, e.getMessage(), e);
         }
@@ -80,12 +79,11 @@ public class ImageChooserFragment extends Fragment implements
 
     private void chooseImage() {
         chooserType = ChooserType.REQUEST_PICK_PICTURE;
-        imageChooserManager = new MediaChooserManager(this,
-                ChooserType.REQUEST_PICK_PICTURE);
+        imageChooserManager = new MediaChooserManager(this);
         imageChooserManager.setMediaChooserListener(this);
 
         try {
-            mediaPath = imageChooserManager.choose();
+            mediaPath = imageChooserManager.choose(ChooserType.REQUEST_PICK_PICTURE);
         } catch (ChooserException e) {
             Log.e(TAG, e.getMessage(), e);
         }
@@ -111,7 +109,7 @@ public class ImageChooserFragment extends Fragment implements
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
             if (imageChooserManager == null) {
-                imageChooserManager = new MediaChooserManager(this, requestCode);
+                imageChooserManager = new MediaChooserManager(this);
                 imageChooserManager.setMediaChooserListener(this);
                 imageChooserManager.reinitialize(mediaPath);
             }

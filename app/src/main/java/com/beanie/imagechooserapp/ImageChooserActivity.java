@@ -92,31 +92,25 @@ public class ImageChooserActivity extends BasicActivity implements
 
     private void chooseImage() {
         chooserType = ChooserType.REQUEST_PICK_PICTURE;
-        imageChooserManager = new MediaChooserManager(this,
-                ChooserType.REQUEST_PICK_PICTURE);
+        imageChooserManager = new MediaChooserManager(this);
         imageChooserManager.setMediaChooserListener(this);
         try {
             pbar.setVisibility(View.VISIBLE);
-            filePath = imageChooserManager.choose();
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
+            filePath = imageChooserManager.choose(ChooserType.REQUEST_PICK_PICTURE);
+        } catch (ChooserException e) {
+            Log.e(TAG, e.getMessage(), e);
         }
     }
 
     private void takePicture() {
         chooserType = ChooserType.REQUEST_CAPTURE_PICTURE;
-        imageChooserManager = new MediaChooserManager(this,
-                ChooserType.REQUEST_CAPTURE_PICTURE);
+        imageChooserManager = new MediaChooserManager(this);
         imageChooserManager.setMediaChooserListener(this);
         try {
             pbar.setVisibility(View.VISIBLE);
-            filePath = imageChooserManager.choose();
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
+            filePath = imageChooserManager.choose(ChooserType.REQUEST_CAPTURE_PICTURE);
+        } catch (ChooserException e) {
+            Log.e(TAG, e.getMessage(), e);
         }
     }
 
@@ -200,7 +194,7 @@ public class ImageChooserActivity extends BasicActivity implements
     // Should be called if for some reason the ImageChooserManager is null (Due
     // to destroying of activity for low memory situations)
     private void reinitializeImageChooser() {
-        imageChooserManager = new MediaChooserManager(this, chooserType);
+        imageChooserManager = new MediaChooserManager(this);
         imageChooserManager.setMediaChooserListener(this);
         imageChooserManager.reinitialize(filePath);
     }

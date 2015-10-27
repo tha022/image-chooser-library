@@ -26,11 +26,10 @@ public class MediaChooserActivity extends BasicActivity implements
 	}
 
 	public void pickMedia(View view) {
-		chooserManager = new MediaChooserManager(this,
-				ChooserType.REQUEST_PICK_PICTURE_OR_VIDEO);
+		chooserManager = new MediaChooserManager(this);
 		chooserManager.setMediaChooserListener(this);
 		try {
-			String path = chooserManager.choose();
+			String path = chooserManager.choose(ChooserType.REQUEST_PICK_PICTURE_OR_VIDEO);
 		} catch (Exception e) {
 			Log.e(TAG, e.getMessage(), e);
 		}
