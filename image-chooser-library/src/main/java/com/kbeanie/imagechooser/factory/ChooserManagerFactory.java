@@ -14,30 +14,19 @@ import com.kbeanie.imagechooser.exceptions.CreationException;
 public class ChooserManagerFactory {
 
 
-    public static BChooser newInstance(Activity activity, int type) {
-        return newInstance(activity, type, null);
+    public static BChooser newInstance(Activity activity) {
+        return newInstance(activity, null);
     }
 
-    public static BChooser newInstance(Activity activity, int type, String filePath) {
+    public static BChooser newInstance(Activity activity, String filePath) {
         if(!(activity instanceof MediaChooserListener)) {
             throw new CreationException("Activity must implement MediaChooserListener");
         }
-        return newInstance(activity, (MediaChooserListener) activity, type, filePath);
+        return newInstance(activity, (MediaChooserListener) activity, filePath);
     }
 
-    public static BChooser newInstance(Activity activity, MediaChooserListener listener, int type, String filePath) {
-        BChooser manager;
-        switch (type) {
-            case ChooserType.REQUEST_PICK_VIDEO:
-            case ChooserType.REQUEST_CAPTURE_VIDEO:
-            case ChooserType.REQUEST_PICK_PICTURE:
-            case ChooserType.REQUEST_CAPTURE_PICTURE:
-                manager = new MediaChooserManager(activity);
-                break;
-            default:
-                throw new CreationException("Not valid type = "+type);
-        }
-
+    public static BChooser newInstance(Activity activity, MediaChooserListener listener, String filePath) {
+        BChooser manager = new MediaChooserManager(activity);
         manager.setMediaChooserListener(listener);
         manager.reinitialize(filePath);
         return manager;
