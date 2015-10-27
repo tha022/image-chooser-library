@@ -14,11 +14,23 @@
  * limitations under the License.
  *******************************************************************************/
 
-package com.kbeanie.imagechooser.threads;
+package com.kbeanie.imagechooser.listeners;
 
-import com.kbeanie.imagechooser.api.ChosenImage;
+import com.kbeanie.imagechooser.models.ChosenImage;
 
-public interface ImageProcessorListener {
-    void onProcessedImage(ChosenImage image);
+public interface ImageChooserListener {
+    /**
+     * When the processing is complete, you will receive this callback with
+     * {@link ChosenImage}
+     * 
+     * @param image
+     */
+    void onImageChosen(ChosenImage image);
+
+    /**
+     * Handle any error conditions if at all, when you receieve this callback
+     * 
+     * @param reason
+     */
     void onError(String reason);
 }

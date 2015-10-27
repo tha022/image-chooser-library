@@ -32,10 +32,12 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 
 import com.kbeanie.imagechooser.exceptions.ChooserException;
 import com.kbeanie.imagechooser.factory.UriFactory;
+import com.kbeanie.imagechooser.listeners.MediaChooserListener;
+import com.kbeanie.imagechooser.utils.BChooserPreferences;
+import com.kbeanie.imagechooser.utils.FileUtils;
 
 import static com.kbeanie.imagechooser.helpers.StreamHelper.closeSilent;
 import static com.kbeanie.imagechooser.helpers.StreamHelper.verifyCursor;
@@ -47,71 +49,31 @@ public abstract class BChooser {
     protected Activity activity;
 
     protected Fragment fragment;
-
     protected android.app.Fragment appFragment;
-
     protected int type;
-
     protected String foldername;
-
-    protected boolean shouldCreateThumbnails;
-
     protected String filePathOriginal;
-
     protected Bundle extras;
 
     protected MediaChooserListener listener;
 
 
-    @Deprecated
-    public BChooser(Activity activity, int type, String folderName,
-                    boolean shouldCreateThumbnails) {
+    public BChooser(Activity activity, int type) {
         this.activity = activity;
         this.type = type;
-        this.foldername = folderName;
-        this.shouldCreateThumbnails = shouldCreateThumbnails;
-    }
-
-    @Deprecated
-    public BChooser(Fragment fragment, int type, String foldername,
-                    boolean shouldCreateThumbnails) {
-        this.fragment = fragment;
-        this.type = type;
-        this.foldername = foldername;
-        this.shouldCreateThumbnails = shouldCreateThumbnails;
-    }
-
-    @Deprecated
-    public BChooser(android.app.Fragment fragment, int type, String foldername,
-                    boolean shouldCreateThumbnails) {
-        this.appFragment = fragment;
-        this.type = type;
-        this.foldername = foldername;
-        this.shouldCreateThumbnails = shouldCreateThumbnails;
-    }
-
-    public BChooser(Activity activity, int type,
-                    boolean shouldCreateThumbnails) {
-        this.activity = activity;
-        this.type = type;
-        this.shouldCreateThumbnails = shouldCreateThumbnails;
         initDirector(activity.getApplicationContext());
     }
 
-    public BChooser(Fragment fragment, int type,
-                    boolean shouldCreateThumbnails) {
+    public BChooser(Fragment fragment, int type) {
         this.fragment = fragment;
         this.type = type;
-        this.shouldCreateThumbnails = shouldCreateThumbnails;
         initDirector(fragment.getActivity().getApplicationContext());
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public BChooser(android.app.Fragment fragment, int type,
-                    boolean shouldCreateThumbnails) {
+    public BChooser(android.app.Fragment fragment, int type) {
         this.appFragment = fragment;
         this.type = type;
-        this.shouldCreateThumbnails = shouldCreateThumbnails;
         initDirector(fragment.getActivity().getApplicationContext());
     }
 
@@ -141,7 +103,7 @@ public abstract class BChooser {
      * @param requestCode
      * @param data
      */
-    public abstract void submit(int requestCode, Intent data);
+    public abstract void submit(int requestCode, Intent data) throws ChooserException;
 
     protected void checkDirectory() throws ChooserException {
         File directory;
@@ -172,20 +134,6 @@ public abstract class BChooser {
      */
     public void reinitialize(String path) {
         filePathOriginal = path;
-    }
-
-    // Change the URI only when the returned string contains "file:/" prefix.
-    // For all the other situations the URI doesn't need to be changed
-    protected void sanitizeURI(String uri) {
-        filePathOriginal = uri;
-        // Picasa on Android < 3.0
-        if (uri.matches("https?://\\w+\\.googleusercontent\\.com/.+")) {
-            filePathOriginal = uri;
-        }
-        // Local storage
-        if (uri.startsWith("file://")) {
-            filePathOriginal = uri.substring(7);
-        }
     }
 
     @SuppressLint("NewApi")
@@ -269,8 +217,8 @@ public abstract class BChooser {
         foldername = preferences.getFolderName();
     }
 
-    protected String buildFilePathOriginal(String foldername) {
-        return UriFactory.getInstance().getFilePathOriginal(foldername);
+    protected String buildFilePathOriginal(String foldername, String extension) throws ChooserException {
+        return UriFactory.getInstance().getFilePathOriginal(foldername, extension);
     }
 
     protected Uri buildCaptureUri(String filePathOriginal) {

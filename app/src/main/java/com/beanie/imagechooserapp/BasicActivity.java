@@ -17,7 +17,6 @@ import com.google.android.gms.analytics.Tracker;
  */
 public class BasicActivity extends AppCompatActivity {
     private Tracker tracker;
-    private AdView adView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,24 +41,10 @@ public class BasicActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    protected void setupAds() {
-        adView = (AdView) findViewById(R.id.adView);
 
-        AdRequest.Builder builder = new AdRequest.Builder();
-        builder.addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
-                .addTestDevice(Config.NEXUS_S)
-                .addTestDevice(Config.TEST_DEVICE_ID_2)
-                .addTestDevice(Config.TEST_GALAXY_NEXUS)
-                .addTestDevice(Config.TEST_OPO);
-        AdRequest request = builder.build();
-        adView.loadAd(request);
-    }
 
     @Override
     public void onDestroy() {
-        if (adView != null) {
-            adView.destroy();
-        }
         super.onDestroy();
     }
 }

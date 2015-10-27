@@ -1,16 +1,18 @@
-package com.kbeanie.imagechooser.api.utils;
+package com.kbeanie.imagechooser.views;
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
+import android.os.Build;
 import android.support.annotation.NonNull;
 
-import com.kbeanie.imagechooser.api.ChooserType;
+import com.kbeanie.imagechooser.models.ChooserType;
 
-public class VideoChooserBuilder extends Builder {
+public class ImageChooserBuilder extends Builder {
 	private OnClickListener listener;
 
 	private Context context;
@@ -19,10 +21,10 @@ public class VideoChooserBuilder extends Builder {
 
 	private String titleGalleryOption;
 
-	private String titleCaptureVideoOption;
+	private String titleTakePictureOption;
 
 	@SuppressLint("NewApi")
-	public VideoChooserBuilder(Context context, int theme,
+	public ImageChooserBuilder(Context context, int theme,
 			OnClickListener listener) {
 		super(context, theme);
 		this.listener = listener;
@@ -30,20 +32,21 @@ public class VideoChooserBuilder extends Builder {
         setupDefaultData();
 	}
 
-	public VideoChooserBuilder(Context context, OnClickListener listener) {
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    public ImageChooserBuilder(Context context, OnClickListener listener) {
 		super(context);
 		this.listener = listener;
 		this.context = context;
         setupDefaultData();
 	}
 
-	public Builder setDialogTitle(int resId) {
-		this.title = context.getString(resId);
+	public Builder setDialogTitle(String title) {
+		this.title = title;
         return this;
 	}
 
-	public Builder setDialogTitle(String title) {
-		this.title = title;
+	public Builder setDialogTitle(int resId) {
+		this.title = context.getString(resId);
         return this;
 	}
 
@@ -57,39 +60,39 @@ public class VideoChooserBuilder extends Builder {
         return this;
 	}
 
-	public Builder setTitleCaptureVideoOption(String titleCaptureVideoOption) {
-		this.titleCaptureVideoOption = titleCaptureVideoOption;
+	public Builder setTitleTakePictureOption(String titleTakePictureOption) {
+		this.titleTakePictureOption = titleTakePictureOption;
         return this;
 	}
 
-	public Builder setTitleCaptureVideoOption(int resId) {
-		this.titleCaptureVideoOption = context.getString(resId);
+	public Builder setTitleTakePictureOption(int resId) {
+		this.titleTakePictureOption = context.getString(resId);
         return this;
 	}
 
     private void setupDefaultData(){
         title = "Choose an option";
         titleGalleryOption = "Choose from Gallery";
-        titleCaptureVideoOption = "Capture Video";
+        titleTakePictureOption = "Take a picture";
     }
 
     @NonNull
     @Override
     public AlertDialog create() {
         setTitle(title);
-        CharSequence[] titles = { titleGalleryOption, titleCaptureVideoOption };
+        CharSequence[] titles = { titleGalleryOption, titleTakePictureOption };
         setItems(titles, new OnClickListener() {
 
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if (which == 0) {
-                    listener.onClick(dialog, ChooserType.REQUEST_PICK_VIDEO);
+                    listener.onClick(dialog, ChooserType.REQUEST_PICK_PICTURE);
                 } else if (which == 1) {
-                    listener.onClick(dialog, ChooserType.REQUEST_CAPTURE_VIDEO);
+                    listener.onClick(dialog,
+                            ChooserType.REQUEST_CAPTURE_PICTURE);
                 }
             }
         });
-
         AlertDialog d = super.create();
         return d;
     }

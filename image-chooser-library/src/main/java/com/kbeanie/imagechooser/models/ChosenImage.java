@@ -14,15 +14,20 @@
  * limitations under the License.
  *******************************************************************************/
 
-package com.kbeanie.imagechooser.api;
+package com.kbeanie.imagechooser.models;
 
+
+import com.kbeanie.imagechooser.exceptions.ChooserException;
 
 public class ChosenImage extends ChosenMedia {
+
     private String filePathOriginal;
 
-    private String fileThumbnail;
+    public ChosenImage(String filePathOriginal) {
+        this.filePathOriginal = filePathOriginal;
+    }
 
-    private String fileThumbnailSmall;
+    // Getters and setters
 
     public String getFilePathOriginal() {
         return filePathOriginal;
@@ -32,33 +37,17 @@ public class ChosenImage extends ChosenMedia {
         this.filePathOriginal = filePathOriginal;
     }
 
-    public String getFileThumbnail() {
-        return fileThumbnail;
-    }
-
-    public void setFileThumbnail(String fileThumbnail) {
-        this.fileThumbnail = fileThumbnail;
-    }
-
-    public String getFileThumbnailSmall() {
-        return fileThumbnailSmall;
-    }
-
-    public void setFileThumbnailSmall(String fileThumbnailSmall) {
-        this.fileThumbnailSmall = fileThumbnailSmall;
-    }
-
     @Override
-    public String getMediaHeight() {
+    public String getMediaHeight() throws ChooserException {
         return getHeight(filePathOriginal);
     }
 
     @Override
-    public String getMediaWidth() {
+    public String getMediaWidth() throws ChooserException {
        return getWidth(filePathOriginal);
     }
     
-    public String getExtension(){
+    public String getExtension() throws ChooserException {
         return getFileExtension(filePathOriginal);
     }
 

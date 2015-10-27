@@ -18,19 +18,19 @@
 
 package com.beanie.imagechooserapp;
 
-import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.View;
 
-import com.beanie.imagechooserapp.fragments.ImageChooserFragment;
 import com.crashlytics.android.Crashlytics;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
-import com.kbeanie.imagechooser.api.BChooser;
-import com.kbeanie.imagechooser.api.BChooserPreferences;
+import com.kbeanie.imagechooser.utils.BChooserPreferences;
+
+import java.io.File;
 
 import io.fabric.sdk.android.Fabric;
+
 
 public class HomeActivity extends BasicActivity {
 
@@ -39,11 +39,45 @@ public class HomeActivity extends BasicActivity {
         super.onCreate(savedInstanceState);
         Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_home);
-        setupAds();
 
         // One time call to setup the folder to be used for all files
         BChooserPreferences preferences = new BChooserPreferences(getApplicationContext());
         preferences.setFolderName("ICL");
+    }
+
+    int PICK_IMAGE_REQUEST = 1;
+
+    public void goToRonk(View view) {
+
+        // Intent intent = new Intent(Intent.ACTION_PICK);
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("image/*");
+        //intent.setType("video/*, image/*");
+        //intent.setType("video/*");
+
+        // Always show the chooser (if there are multiple options available)
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
+        // Intent intent = new Intent(MediaStore.ACTION_GET_CONTENT);
+        // String filePathOriginal = getDirectory("thomas");
+        // intent.putExtra(MediaStore.EXTRA_OUTPUT, buildCaptureUri(filePathOriginal));
+        /* if (extras != null) {
+            intent.putExtras(extras);
+        } */
+        //startActivity(intent);
+    }
+
+    protected Uri buildCaptureUri(String filePathOriginal) {
+        return Uri.fromFile(new File(filePathOriginal));
+    }
+
+    public static String getDirectory(String foldername) {
+        File directory = null;
+        directory = new File(Environment.getExternalStorageDirectory().getAbsolutePath()
+                + File.separator + foldername);
+        if (!directory.exists()) {
+            directory.mkdirs();
+        }
+        return directory.getAbsolutePath();
     }
 
     public void gotoImageChooserFragment(View view) {
@@ -63,11 +97,6 @@ public class HomeActivity extends BasicActivity {
 
     public void gotoMediaChooser(View view) {
         Intent intent = new Intent(this, MediaChooserActivity.class);
-        startActivity(intent);
-    }
-
-    public void gotoFileChooser(View view) {
-        Intent intent = new Intent(this, FileChooserActivity.class);
         startActivity(intent);
     }
 }

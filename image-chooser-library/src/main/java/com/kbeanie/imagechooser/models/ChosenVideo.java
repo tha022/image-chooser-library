@@ -14,17 +14,20 @@
  * limitations under the License.
  *******************************************************************************/
 
-package com.kbeanie.imagechooser.api;
+package com.kbeanie.imagechooser.models;
+
+import android.net.Uri;
+
+import com.kbeanie.imagechooser.exceptions.ChooserException;
 
 public class ChosenVideo extends ChosenMedia {
 
-    String videoPreviewImage;
-
-    String videoFilePath;
-
+    //private String videoPreviewImage;
+    private String videoFilePath;
     private String thumbnailPath;
 
-    private String thumbnailSmallPath;
+
+    // Getters and setters
 
     public String getVideoFilePath() {
         return videoFilePath;
@@ -42,33 +45,27 @@ public class ChosenVideo extends ChosenMedia {
         this.thumbnailPath = thumbnailPath;
     }
 
-    public String getThumbnailSmallPath() {
-        return thumbnailSmallPath;
-    }
-
-    public void setThumbnailSmallPath(String thumbnailSmallPath) {
-        this.thumbnailSmallPath = thumbnailSmallPath;
-    }
-
-    public String getVideoPreviewImage() {
+    /*public String getVideoPreviewImage() {
         return videoPreviewImage;
     }
 
     public void setVideoPreviewImage(String videoPreviewImage) {
         this.videoPreviewImage = videoPreviewImage;
-    }
+    }*/
 
     @Override
     public String getMediaHeight() {
-        return getHeight(videoPreviewImage);
+        return "-1"; // HACK
+        //return getHeight(videoPreviewImage);
     }
 
     @Override
     public String getMediaWidth() {
-        return getWidth(videoPreviewImage);
+        return "-1"; // HACK
+        //return getWidth(videoPreviewImage);
     }
 
-    public String getExtension() {
+    public String getExtension() throws ChooserException {
         return getFileExtension(videoFilePath);
     }
 }

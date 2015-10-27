@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,29 +17,23 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.beanie.imagechooserapp.R;
-import com.crashlytics.android.Crashlytics;
-import com.kbeanie.imagechooser.api.ChooserType;
-import com.kbeanie.imagechooser.api.ChosenImage;
-import com.kbeanie.imagechooser.api.ChosenVideo;
-import com.kbeanie.imagechooser.api.ImageChooserListener;
-import com.kbeanie.imagechooser.api.ImageChooserManager;
-import com.kbeanie.imagechooser.api.MediaChooserListener;
-
-import java.io.File;
+import com.kbeanie.imagechooser.api.MediaChooserManager;
+import com.kbeanie.imagechooser.exceptions.ChooserException;
+import com.kbeanie.imagechooser.models.ChooserType;
+import com.kbeanie.imagechooser.models.ChosenImage;
+import com.kbeanie.imagechooser.models.ChosenVideo;
+import com.kbeanie.imagechooser.listeners.MediaChooserListener;
 
 @SuppressLint("NewApi")
 public class ImageChooserFragment extends Fragment implements
         MediaChooserListener {
-    private ImageChooserManager imageChooserManager;
+
+    private String TAG = ImageChooserFragment.class.getSimpleName();
+
+    private MediaChooserManager imageChooserManager;
     private int chooserType;
     private String mediaPath;
-
-    private ImageView imageViewThumbnail;
-
-    private ImageView imageViewThumbSmall;
-
     private TextView textViewFile;
-
     private ProgressBar pbar;
 
     @Override
@@ -65,8 +58,6 @@ public class ImageChooserFragment extends Fragment implements
             }
         });
 
-        imageViewThumbnail = (ImageView) view.findViewById(R.id.imageViewThumb);
-        imageViewThumbSmall = (ImageView) view.findViewById(R.id.imageViewThumbSmall);
         textViewFile = (TextView) view.findViewById(R.id.textViewFile);
 
         pbar = (ProgressBar) view.findViewById(R.id.progressBar);
@@ -77,30 +68,28 @@ public class ImageChooserFragment extends Fragment implements
 
     private void takePicture() {
         chooserType = ChooserType.REQUEST_CAPTURE_PICTURE;
-        imageChooserManager = new ImageChooserManager(this,
-                ChooserType.REQUEST_CAPTURE_PICTURE, true);
+        imageChooserManager = new MediaChooserManager(this,
+                ChooserType.REQUEST_CAPTURE_PICTURE);
         imageChooserManager.setMediaChooserListener(this);
         try {
             mediaPath = imageChooserManager.choose();
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (ChooserException e) {
+            Log.e(TAG, e.getMessage(), e);
         }
     }
 
     private void chooseImage() {
         chooserType = ChooserType.REQUEST_PICK_PICTURE;
-        imageChooserManager = new ImageChooserManager(this,
-                ChooserType.REQUEST_PICK_PICTURE, true);
+        imageChooserManager = new MediaChooserManager(this,
+                ChooserType.REQUEST_PICK_PICTURE);
         imageChooserManager.setMediaChooserListener(this);
+
         try {
             mediaPath = imageChooserManager.choose();
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (ChooserException e) {
+            Log.e(TAG, e.getMessage(), e);
         }
+
     }
 
     @Override
@@ -122,11 +111,15 @@ public class ImageChooserFragment extends Fragment implements
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
             if (imageChooserManager == null) {
-                imageChooserManager = new ImageChooserManager(this, requestCode, true);
+                imageChooserManager = new MediaChooserManager(this, requestCode);
                 imageChooserManager.setMediaChooserListener(this);
                 imageChooserManager.reinitialize(mediaPath);
             }
-            imageChooserManager.submit(requestCode, data);
+            try {
+                imageChooserManager.submit(requestCode, data);
+            } catch (ChooserException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
         }
     }
 
@@ -139,10 +132,6 @@ public class ImageChooserFragment extends Fragment implements
                 pbar.setVisibility(View.GONE);
                 if (image != null) {
                     textViewFile.setText(image.getFilePathOriginal());
-                    imageViewThumbnail.setImageURI(Uri.parse(new File(image
-                            .getFileThumbnail()).toString()));
-                    imageViewThumbSmall.setImageURI(Uri.parse(new File(image
-                            .getFileThumbnailSmall()).toString()));
                 }
             }
         });

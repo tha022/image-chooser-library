@@ -3,10 +3,9 @@ package com.kbeanie.imagechooser.factory;
 import android.app.Activity;
 
 import com.kbeanie.imagechooser.api.BChooser;
-import com.kbeanie.imagechooser.api.ChooserType;
-import com.kbeanie.imagechooser.api.ImageChooserManager;
-import com.kbeanie.imagechooser.api.MediaChooserListener;
-import com.kbeanie.imagechooser.api.VideoChooserManager;
+import com.kbeanie.imagechooser.api.MediaChooserManager;
+import com.kbeanie.imagechooser.models.ChooserType;
+import com.kbeanie.imagechooser.listeners.MediaChooserListener;
 import com.kbeanie.imagechooser.exceptions.CreationException;
 
 /**
@@ -31,11 +30,9 @@ public class ChooserManagerFactory {
         switch (type) {
             case ChooserType.REQUEST_PICK_VIDEO:
             case ChooserType.REQUEST_CAPTURE_VIDEO:
-                manager = new VideoChooserManager(activity, type);
-                break;
             case ChooserType.REQUEST_PICK_PICTURE:
             case ChooserType.REQUEST_CAPTURE_PICTURE:
-                manager = new ImageChooserManager(activity, type);
+                manager = new MediaChooserManager(activity, type);
                 break;
             default:
                 throw new CreationException("Not valid type = "+type);

@@ -27,44 +27,47 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
+import android.provider.MediaStore;
 import android.provider.MediaStore.Video.Thumbnails;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.kbeanie.imagechooser.BuildConfig;
-import com.kbeanie.imagechooser.api.ChosenVideo;
-import com.kbeanie.imagechooser.api.FileUtils;
+import com.kbeanie.imagechooser.helpers.MediaHelper;
+import com.kbeanie.imagechooser.models.ChosenVideo;
+import com.kbeanie.imagechooser.utils.FileUtils;
 import com.kbeanie.imagechooser.exceptions.ChooserException;
+import com.kbeanie.imagechooser.utils.MediaResourceUtils;
+
 import static com.kbeanie.imagechooser.helpers.StreamHelper.*;
 
 
-public class VideoProcessorThread extends MediaProcessorThread {
+public class VideoProcessorThread extends Thread {
 
     private final static String TAG = VideoProcessorThread.class.getSimpleName();
 
     private VideoProcessorListener listener;
 
-    private String previewImage;
+    protected MediaResourceUtils mediaResourceUtils;
+    protected String filePath;
+    protected String foldername;
 
-    public VideoProcessorThread(String filePath, String foldername,
-                                boolean shouldCreateThumbnails) {
-        super(filePath, foldername, shouldCreateThumbnails);
-        setMediaExtension("mp4");
+
+    public VideoProcessorThread(MediaResourceUtils mediaResourceUtils, String filePath, String foldername) {
+        this.mediaResourceUtils = mediaResourceUtils;
+        this.filePath = filePath;
+        this.foldername = foldername;
     }
 
     public void setListener(VideoProcessorListener listener) {
         this.listener = listener;
     }
 
-    public void setContext(Context context) {
-        this.context = context;
-    }
-
     @Override
     public void run() {
         try {
-            manageDiretoryCache("mp4");
-            processVideo();
+            mediaResourceUtils.manageDirectoryCache("mp4", foldername);
+            processVideo(filePath, foldername);
         } catch (Exception e) { // catch all, just to be sure we can send message back to listener in all circumenstances.
             Log.e(TAG, e.getMessage(), e);
             if (listener != null) {
@@ -73,107 +76,48 @@ public class VideoProcessorThread extends MediaProcessorThread {
         }
     }
 
-    private void processVideo() throws ChooserException {
+    private void processVideo(String path, String foldername) throws ChooserException {
+        String filePath = mediaResourceUtils.getFilePath(path, foldername);
+        process(filePath, foldername);
+    }
 
-        if (BuildConfig.DEBUG) {
-            Log.i(TAG, "Processing Video file: " + filePath);
-        }
+    protected void process(String filePath, String foldername) throws ChooserException {
+        String thumbnailPath = MediaHelper.getThumnailPath(createThumbnailOfVideo(filePath, foldername));
+        processingDone(filePath, thumbnailPath);
+    }
 
-        // Picasa on Android >= 3.0
-        if (filePath != null && filePath.startsWith("content:")) {
-            filePath = getAbsoluteImagePathFromUri(Uri.parse(filePath));
+    private String createThumbnailOfVideo(String filePath, String foldername) throws ChooserException {
+
+        Log.d(TAG, "createThumbnailOfVideo, filePath = " + filePath + " foldername = " + foldername);
+
+        Bitmap bitmap = ThumbnailUtils.createVideoThumbnail(filePath, Thumbnails.MINI_KIND);
+        if (bitmap == null) {
+            throw new ChooserException("Cant generate thumbnail for filePath = "+filePath);
         }
-        if (filePath == null || TextUtils.isEmpty(filePath)) {
-            if (listener != null) {
-                listener.onError("Couldn't process a null file");
-            }
-        } else if (filePath.startsWith("http")) {
-            downloadAndProcess(filePath);
-        } else if (filePath
-                .startsWith("content://com.google.android.gallery3d")
-                || filePath
-                .startsWith("content://com.microsoft.skydrive.content.external")) {
-            processPicasaMedia(filePath, ".mp4");
-        } else if (filePath
-                .startsWith("content://com.google.android.apps.photos.content")
-                || filePath
-                .startsWith("content://com.android.providers.media.documents")
-                || filePath
-                .startsWith("content://com.google.android.apps.docs.storage")) {
-            processGooglePhotosMedia(filePath, ".mp4");
-        } else if (filePath.startsWith("content://media/external/video")) {
-            processContentProviderMedia(filePath, ".mp4");
-        } else {
-            process();
+        String thumbnailPath = FileUtils.getDirectory(foldername) + File.separator
+                + Calendar.getInstance().getTimeInMillis() + ".jpg";
+        File file = new File(thumbnailPath);
+
+        FileOutputStream stream = null;
+        try {
+            stream = new FileOutputStream(file);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+
+            return thumbnailPath;
+        } catch(IOException e) {
+            throw new ChooserException(e);
+        } finally {
+            flush(stream);
         }
     }
 
-    @Override
-    protected void process() throws ChooserException {
-        super.process();
-        if (shouldCreateThumnails) {
-            createPreviewImage();
-            String[] thumbnails = createThumbnails(createThumbnailOfVideo());
-            processingDone(this.filePath, thumbnails[0], thumbnails[1]);
-        } else {
-            processingDone(this.filePath, this.filePath, this.filePath);
-        }
-    }
-
-    private String createPreviewImage() throws ChooserException  {
-        previewImage = null;
-        Bitmap bitmap = ThumbnailUtils.createVideoThumbnail(filePath,
-                Thumbnails.FULL_SCREEN_KIND);
-        if (bitmap != null) {
-            previewImage = FileUtils.getDirectory(foldername) + File.separator
-                    + Calendar.getInstance().getTimeInMillis() + ".jpg";
-            File file = new File(previewImage);
-
-            FileOutputStream stream = null;
-            try {
-                stream = new FileOutputStream(file);
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-            } catch(IOException e) {
-                throw new ChooserException(e);
-            } finally {
-                flush(stream);
-            }
-
-        }
-        return previewImage;
-    }
-
-    private String createThumbnailOfVideo() throws ChooserException {
-        String thumbnailPath = null;
-        Bitmap bitmap = ThumbnailUtils.createVideoThumbnail(filePath,
-                Thumbnails.MINI_KIND);
-        if (bitmap != null) {
-            thumbnailPath = FileUtils.getDirectory(foldername) + File.separator
-                    + Calendar.getInstance().getTimeInMillis() + ".jpg";
-            File file = new File(thumbnailPath);
-
-            FileOutputStream stream = null;
-            try {
-                stream = new FileOutputStream(file);
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-            } catch(IOException e) {
-                throw new ChooserException(e);
-            } finally {
-                flush(stream);
-            }
-        }
-        return thumbnailPath;
-    }
-
-    @Override
-    protected void processingDone(String original, String thumbnail,
-                                  String thunbnailSmall) {
+    // @Override
+    protected void processingDone(String original, String thumbnail) {
         if (listener != null) {
             ChosenVideo video = new ChosenVideo();
             video.setVideoFilePath(original);
             video.setThumbnailPath(thumbnail);
-            video.setThumbnailSmallPath(thunbnailSmall);
-            video.setVideoPreviewImage(previewImage);
+            // video.setVideoPreviewImage(previewImage);
             listener.onProcessedVideo(video);
         }
     }

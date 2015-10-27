@@ -1,21 +1,21 @@
 package com.beanie.imagechooserapp;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
-import com.kbeanie.imagechooser.api.ChooserType;
-import com.kbeanie.imagechooser.api.ChosenImage;
-import com.kbeanie.imagechooser.api.ChosenVideo;
-import com.kbeanie.imagechooser.api.MediaChooserListener;
+import com.kbeanie.imagechooser.models.ChooserType;
+import com.kbeanie.imagechooser.exceptions.ChooserException;
+import com.kbeanie.imagechooser.models.ChosenImage;
+import com.kbeanie.imagechooser.models.ChosenVideo;
+import com.kbeanie.imagechooser.listeners.MediaChooserListener;
 import com.kbeanie.imagechooser.api.MediaChooserManager;
 
 public class MediaChooserActivity extends BasicActivity implements
 		MediaChooserListener {
 
-	private final static String TAG = "MediaChooserActivity";
+	private final static String TAG = MediaChooserActivity.class.getSimpleName();
 
 	private MediaChooserManager chooserManager;
 
@@ -23,8 +23,6 @@ public class MediaChooserActivity extends BasicActivity implements
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_media_chooser);
-
-        setupAds();
 	}
 
 	public void pickMedia(View view) {
@@ -34,7 +32,7 @@ public class MediaChooserActivity extends BasicActivity implements
 		try {
 			String path = chooserManager.choose();
 		} catch (Exception e) {
-			e.printStackTrace();
+			Log.e(TAG, e.getMessage(), e);
 		}
 	}
 
@@ -42,7 +40,11 @@ public class MediaChooserActivity extends BasicActivity implements
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (resultCode == RESULT_OK
 				&& requestCode == ChooserType.REQUEST_PICK_PICTURE_OR_VIDEO) {
-			chooserManager.submit(requestCode, data);
+			try {
+				chooserManager.submit(requestCode, data);
+			} catch (ChooserException e) {
+				Log.e(TAG, e.getMessage(), e);
+			}
 		}
 		super.onActivityResult(requestCode, resultCode, data);
 	}

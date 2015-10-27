@@ -1,4 +1,4 @@
-package com.kbeanie.imagechooser.api;
+package com.kbeanie.imagechooser.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
