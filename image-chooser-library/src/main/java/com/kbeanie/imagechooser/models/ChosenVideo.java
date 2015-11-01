@@ -66,6 +66,11 @@ public class ChosenVideo extends ChosenMedia {
         return ChosenMedia.toFileUri(videoFilePath);
     }
 
+    @Override
+    public MediaType getMediaType() {
+        return MediaType.VIDEO;
+    }
+
     public String getExtension() throws ChooserException {
         return getFileExtension(videoFilePath);
     }

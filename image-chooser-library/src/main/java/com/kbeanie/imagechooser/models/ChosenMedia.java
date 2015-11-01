@@ -69,4 +69,6 @@ public abstract class ChosenMedia {
     public abstract Uri getThumbUri();
 
     public abstract Uri getMediaUri();
+
+    public abstract MediaType getMediaType();
 }

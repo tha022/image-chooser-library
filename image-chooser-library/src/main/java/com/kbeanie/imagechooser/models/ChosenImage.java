@@ -63,6 +63,11 @@ public class ChosenImage extends ChosenMedia {
     }
 
     @Override
+    public MediaType getMediaType() {
+        return MediaType.IMAGE;
+    }
+
+    @Override
     public Uri getThumbUri() {
         return imageUri;
     }
