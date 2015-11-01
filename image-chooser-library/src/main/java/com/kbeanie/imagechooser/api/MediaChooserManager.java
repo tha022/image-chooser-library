@@ -24,6 +24,8 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
@@ -39,8 +41,6 @@ import com.kbeanie.imagechooser.threads.VideoProcessorListener;
 import com.kbeanie.imagechooser.threads.VideoProcessorThread;
 import com.kbeanie.imagechooser.utils.MediaResourceUtils;
 
-import java.io.File;
-
 /**
  * Easy Media Chooser Library for Android Apps. Forget about coding workarounds
  * for different devices, OSes and folders.
@@ -51,8 +51,9 @@ public class MediaChooserManager extends BChooser implements VideoProcessorListe
 
     private final static String TAG = MediaChooserManager.class.getSimpleName();
 
-    private MediaChooserListener listener;
+    private Handler handlerMainThread = new Handler(Looper.getMainLooper());
 
+    private MediaChooserListener listener;
     /**
      * Simplest constructor. Specify the type
      * {@link ChooserType}
@@ -261,23 +262,38 @@ public class MediaChooserManager extends BChooser implements VideoProcessorListe
         thread.start();
     }
 
-    public void onProcessedImage(ChosenImage image) {
+    public void onProcessedImage(final ChosenImage image) {
         if (listener != null) {
-            listener.onImageChosen(image);
+            handlerMainThread.post(new Runnable() {
+                @Override
+                public void run() {
+                    listener.onImageChosen(image);
+                }
+            });
         }
     }
 
     @Override
-    public void onProcessedVideo(ChosenVideo video) {
+    public void onProcessedVideo(final ChosenVideo video) {
         if (listener != null) {
-            listener.onVideoChosen(video);
+            handlerMainThread.post(new Runnable() {
+                @Override
+                public void run() {
+                    listener.onVideoChosen(video);
+                }
+            });
         }
     }
 
     @Override
-    public void onError(String reason) {
+    public void onError(final String reason) {
         if (listener != null) {
-            listener.onError(reason);
+            handlerMainThread.post(new Runnable() {
+                @Override
+                public void run() {
+                    listener.onError(reason);
+                }
+            });
         }
     }
 }
