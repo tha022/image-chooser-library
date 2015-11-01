@@ -22,7 +22,6 @@ import com.kbeanie.imagechooser.exceptions.ChooserException;
 
 public class ChosenVideo extends ChosenMedia {
 
-    //private String videoPreviewImage;
     private String videoFilePath;
     private String thumbnailPath;
 
@@ -45,14 +44,6 @@ public class ChosenVideo extends ChosenMedia {
         this.thumbnailPath = thumbnailPath;
     }
 
-    /*public String getVideoPreviewImage() {
-        return videoPreviewImage;
-    }
-
-    public void setVideoPreviewImage(String videoPreviewImage) {
-        this.videoPreviewImage = videoPreviewImage;
-    }*/
-
     @Override
     public String getMediaHeight() {
         return "-1"; // HACK
@@ -68,6 +59,11 @@ public class ChosenVideo extends ChosenMedia {
     @Override
     public Uri getThumbUri() {
         return ChosenMedia.toFileUri(thumbnailPath);
+    }
+
+    @Override
+    public Uri getMediaUri() {
+        return ChosenMedia.toFileUri(videoFilePath);
     }
 
     public String getExtension() throws ChooserException {

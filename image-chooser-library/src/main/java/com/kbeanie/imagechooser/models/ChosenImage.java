@@ -57,7 +57,8 @@ public class ChosenImage extends ChosenMedia {
        return getWidth(filePathOriginal);
     }
 
-    public Uri getImageUri() {
+    @Override
+    public Uri getMediaUri() {
         return imageUri;
     }
 

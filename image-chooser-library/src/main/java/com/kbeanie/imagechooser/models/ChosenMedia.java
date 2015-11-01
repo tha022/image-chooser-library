@@ -67,4 +67,6 @@ public abstract class ChosenMedia {
     public abstract String getMediaWidth() throws ChooserException;
 
     public abstract Uri getThumbUri();
+
+    public abstract Uri getMediaUri();
 }
