@@ -38,40 +38,26 @@
         android:visibility="invisible" />
 
     <Button
-        android:id="@+id/buttonPickFile"
+        android:id="@+id/buttonRonk"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/buttonPickMedia"
         android:layout_centerHorizontal="true"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
-        android:onClick="gotoFileChooser"
-        android:text="@string/pick_file" />
+        android:onClick="goToRonk"
+        android:text="Ronk"
+        android:visibility="visible" />
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/buttonPickFile"
-        android:layout_centerHorizontal="true"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:onClick="gotoImageChooserFragment"
-        android:text="@string/image_chooser_fragment" />
+
 
     <TextView
         android:id="@+id/textViewVersion"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/buttonPickFile"
+        android:layout_below="@+id/buttonRonk"
         android:layout_marginTop="20dp"
         android:gravity="center_horizontal"
         android:text="@string/lab_version_string" />
-
-    <include
-        layout="@layout/ad_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />
 
 </RelativeLayout>

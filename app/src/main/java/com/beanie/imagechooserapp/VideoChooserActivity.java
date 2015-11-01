@@ -20,33 +20,34 @@ package com.beanie.imagechooserapp;
 
 import java.io.File;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 import android.widget.VideoView;
 
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
-import com.kbeanie.imagechooser.api.ChooserType;
-import com.kbeanie.imagechooser.api.ChosenVideo;
-import com.kbeanie.imagechooser.api.VideoChooserListener;
-import com.kbeanie.imagechooser.api.VideoChooserManager;
+import com.kbeanie.imagechooser.api.MediaChooserManager;
+import com.kbeanie.imagechooser.exceptions.ChooserException;
+import com.kbeanie.imagechooser.models.ChooserType;
+import com.kbeanie.imagechooser.models.ChosenImage;
+import com.kbeanie.imagechooser.models.ChosenVideo;
+import com.kbeanie.imagechooser.listeners.MediaChooserListener;
+
 
 public class VideoChooserActivity extends BasicActivity implements
-        VideoChooserListener {
-    private VideoChooserManager videoChooserManager;
+        MediaChooserListener {
+
+    private String TAG = VideoChooserActivity.class.getSimpleName();
+
+    private MediaChooserManager videoChooserManager;
 
     private ProgressBar pbar;
 
     private ImageView imageViewThumb;
-
-    private ImageView imageViewThumbSmall;
-
     private VideoView videoView;
 
     private String filePath;
@@ -62,40 +63,32 @@ public class VideoChooserActivity extends BasicActivity implements
         pbar.setVisibility(View.GONE);
 
         imageViewThumb = (ImageView) findViewById(R.id.imageViewThumbnail);
-        imageViewThumbSmall = (ImageView) findViewById(R.id.imageViewThumbnailSmall);
 
         videoView = (VideoView) findViewById(R.id.videoView);
-
-        setupAds();
     }
 
     public void captureVideo(View view) {
         chooserType = ChooserType.REQUEST_CAPTURE_VIDEO;
-        videoChooserManager = new VideoChooserManager(this,
-                ChooserType.REQUEST_CAPTURE_VIDEO);
-        videoChooserManager.setVideoChooserListener(this);
+        videoChooserManager = new MediaChooserManager(this);
+        videoChooserManager.setMediaChooserListener(this);
         try {
             pbar.setVisibility(View.VISIBLE);
-            filePath = videoChooserManager.choose();
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
+            filePath = videoChooserManager.choose(ChooserType.REQUEST_CAPTURE_VIDEO);
+            Log.d(TAG, "filePath = "+filePath);
+        } catch (ChooserException e) {
+            Log.e(TAG, e.getMessage(), e);
         }
     }
 
     public void pickVideo(View view) {
         chooserType = ChooserType.REQUEST_PICK_VIDEO;
-        videoChooserManager = new VideoChooserManager(this,
-                ChooserType.REQUEST_PICK_VIDEO);
-        videoChooserManager.setVideoChooserListener(this);
+        videoChooserManager = new MediaChooserManager(this);
+        videoChooserManager.setMediaChooserListener(this);
         try {
-            videoChooserManager.choose();
+            videoChooserManager.choose(ChooserType.REQUEST_PICK_VIDEO);
             pbar.setVisibility(View.VISIBLE);
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (ChooserException e) {
+            Log.e(TAG, e.getMessage(), e);
         }
     }
 
@@ -112,11 +105,14 @@ public class VideoChooserActivity extends BasicActivity implements
                     videoView.start();
                     imageViewThumb.setImageURI(Uri.parse(new File(video
                             .getThumbnailPath()).toString()));
-                    imageViewThumbSmall.setImageURI(Uri.parse(new File(video
-                            .getThumbnailSmallPath()).toString()));
                 }
             }
         });
+    }
+
+    @Override
+    public void onImageChosen(ChosenImage image) {
+
     }
 
     @Override
@@ -139,7 +135,11 @@ public class VideoChooserActivity extends BasicActivity implements
             if (videoChooserManager == null) {
                 reinitializeVideoChooser();
             }
-            videoChooserManager.submit(requestCode, data);
+            try {
+                videoChooserManager.submit(requestCode, data);
+            } catch (ChooserException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
         } else {
             pbar.setVisibility(View.GONE);
         }
@@ -148,8 +148,8 @@ public class VideoChooserActivity extends BasicActivity implements
     // Should be called if for some reason the VideoChooserManager is null (Due
     // to destroying of activity for low memory situations)
     private void reinitializeVideoChooser() {
-        videoChooserManager = new VideoChooserManager(this, chooserType, true);
-        videoChooserManager.setVideoChooserListener(this);
+        videoChooserManager = new MediaChooserManager(this);
+        videoChooserManager.setMediaChooserListener(this);
         videoChooserManager.reinitialize(filePath);
     }
 

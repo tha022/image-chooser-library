@@ -20,11 +20,9 @@ package com.beanie.imagechooserapp;
 
 import java.io.File;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
@@ -35,28 +33,23 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.crashlytics.android.Crashlytics;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
-import com.kbeanie.imagechooser.api.ChooserType;
-import com.kbeanie.imagechooser.api.ChosenImage;
-import com.kbeanie.imagechooser.api.ImageChooserListener;
-import com.kbeanie.imagechooser.api.ImageChooserManager;
+import com.kbeanie.imagechooser.api.MediaChooserManager;
+import com.kbeanie.imagechooser.exceptions.ChooserException;
+import com.kbeanie.imagechooser.models.ChooserType;
+import com.kbeanie.imagechooser.models.ChosenImage;
+import com.kbeanie.imagechooser.models.ChosenVideo;
+import com.kbeanie.imagechooser.listeners.MediaChooserListener;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 public class ImageChooserActivity extends BasicActivity implements
-        ImageChooserListener {
+        MediaChooserListener {
 
     private final static String TAG = "ICA";
 
-    private ImageView imageViewThumbnail;
-
-    private ImageView imageViewThumbSmall;
-
     private TextView textViewFile;
 
-    private ImageChooserManager imageChooserManager;
+    private MediaChooserManager imageChooserManager;
 
     private ProgressBar pbar;
 
@@ -67,8 +60,6 @@ public class ImageChooserActivity extends BasicActivity implements
     private boolean isActivityResultOver = false;
 
     private String originalFilePath;
-    private String thumbnailFilePath;
-    private String thumbnailSmallFilePath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,43 +84,33 @@ public class ImageChooserActivity extends BasicActivity implements
             }
         });
 
-        imageViewThumbnail = (ImageView) findViewById(R.id.imageViewThumb);
-        imageViewThumbSmall = (ImageView) findViewById(R.id.imageViewThumbSmall);
         textViewFile = (TextView) findViewById(R.id.textViewFile);
 
         pbar = (ProgressBar) findViewById(R.id.progressBar);
         pbar.setVisibility(View.GONE);
-
-        setupAds();
     }
 
     private void chooseImage() {
         chooserType = ChooserType.REQUEST_PICK_PICTURE;
-        imageChooserManager = new ImageChooserManager(this,
-                ChooserType.REQUEST_PICK_PICTURE, true);
-        imageChooserManager.setImageChooserListener(this);
+        imageChooserManager = new MediaChooserManager(this);
+        imageChooserManager.setMediaChooserListener(this);
         try {
             pbar.setVisibility(View.VISIBLE);
-            filePath = imageChooserManager.choose();
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
+            filePath = imageChooserManager.choose(ChooserType.REQUEST_PICK_PICTURE);
+        } catch (ChooserException e) {
+            Log.e(TAG, e.getMessage(), e);
         }
     }
 
     private void takePicture() {
         chooserType = ChooserType.REQUEST_CAPTURE_PICTURE;
-        imageChooserManager = new ImageChooserManager(this,
-                ChooserType.REQUEST_CAPTURE_PICTURE, true);
-        imageChooserManager.setImageChooserListener(this);
+        imageChooserManager = new MediaChooserManager(this);
+        imageChooserManager.setMediaChooserListener(this);
         try {
             pbar.setVisibility(View.VISIBLE);
-            filePath = imageChooserManager.choose();
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
+            filePath = imageChooserManager.choose(ChooserType.REQUEST_CAPTURE_PICTURE);
+        } catch (ChooserException e) {
+            Log.e(TAG, e.getMessage(), e);
         }
     }
 
@@ -143,7 +124,11 @@ public class ImageChooserActivity extends BasicActivity implements
             if (imageChooserManager == null) {
                 reinitializeImageChooser();
             }
-            imageChooserManager.submit(requestCode, data);
+            try {
+                imageChooserManager.submit(requestCode, data);
+            } catch (ChooserException e) {
+                Log.e(TAG, e.getMessage());
+            }
         } else {
             pbar.setVisibility(View.GONE);
         }
@@ -156,18 +141,12 @@ public class ImageChooserActivity extends BasicActivity implements
             @Override
             public void run() {
                 Log.i(TAG, "Chosen Image: O - " + image.getFilePathOriginal());
-                Log.i(TAG, "Chosen Image: T - " + image.getFileThumbnail());
-                Log.i(TAG, "Chosen Image: Ts - " + image.getFileThumbnailSmall());
                 isActivityResultOver = true;
                 originalFilePath = image.getFilePathOriginal();
-                thumbnailFilePath = image.getFileThumbnail();
-                thumbnailSmallFilePath = image.getFileThumbnailSmall();
                 pbar.setVisibility(View.GONE);
                 if (image != null) {
                     Log.i(TAG, "Chosen Image: Is not null");
                     textViewFile.setText(image.getFilePathOriginal());
-                    loadImage(imageViewThumbnail, image.getFileThumbnail());
-                    loadImage(imageViewThumbSmall, image.getFileThumbnailSmall());
                 } else {
                     Log.i(TAG, "Chosen Image: Is null");
                 }
@@ -194,6 +173,11 @@ public class ImageChooserActivity extends BasicActivity implements
     }
 
     @Override
+    public void onVideoChosen(ChosenVideo video) {
+
+    }
+
+    @Override
     public void onError(final String reason) {
         runOnUiThread(new Runnable() {
 
@@ -210,8 +194,8 @@ public class ImageChooserActivity extends BasicActivity implements
     // Should be called if for some reason the ImageChooserManager is null (Due
     // to destroying of activity for low memory situations)
     private void reinitializeImageChooser() {
-        imageChooserManager = new ImageChooserManager(this, chooserType, true);
-        imageChooserManager.setImageChooserListener(this);
+        imageChooserManager = new MediaChooserManager(this);
+        imageChooserManager.setMediaChooserListener(this);
         imageChooserManager.reinitialize(filePath);
     }
 
@@ -224,8 +208,6 @@ public class ImageChooserActivity extends BasicActivity implements
         outState.putInt("chooser_type", chooserType);
         outState.putString("media_path", filePath);
         outState.putString("orig", originalFilePath);
-        outState.putString("thumb", thumbnailFilePath);
-        outState.putString("thumbs", thumbnailSmallFilePath);
         super.onSaveInstanceState(outState);
     }
 
@@ -241,8 +223,6 @@ public class ImageChooserActivity extends BasicActivity implements
             if (savedInstanceState.containsKey("activity_result_over")) {
                 isActivityResultOver = savedInstanceState.getBoolean("activity_result_over");
                 originalFilePath = savedInstanceState.getString("orig");
-                thumbnailFilePath = savedInstanceState.getString("thumb");
-                thumbnailSmallFilePath = savedInstanceState.getString("thumbs");
             }
         }
         Log.i(TAG, "Restoring Stuff");
@@ -257,8 +237,6 @@ public class ImageChooserActivity extends BasicActivity implements
 
     private void populateData() {
         Log.i(TAG, "Populating Data");
-        loadImage(imageViewThumbnail, thumbnailFilePath);
-        loadImage(imageViewThumbSmall, thumbnailSmallFilePath);
     }
 
     @Override

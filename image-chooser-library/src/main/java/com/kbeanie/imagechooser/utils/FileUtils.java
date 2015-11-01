@@ -14,11 +14,13 @@
  * limitations under the License.
  *******************************************************************************/
 
-package com.kbeanie.imagechooser.api;
+package com.kbeanie.imagechooser.utils;
 
 import java.io.File;
 
 import android.os.Environment;
+
+import com.kbeanie.imagechooser.exceptions.ChooserException;
 
 public class FileUtils {
     /**
@@ -26,24 +28,23 @@ public class FileUtils {
      * @param foldername
      * @return
      */
-    public static String getDirectory(String foldername) {
-        File directory = null;
-        directory = new File(Environment.getExternalStorageDirectory().getAbsolutePath()
+    public static String getDirectory(String foldername) throws ChooserException {
+        File directory = new File(Environment.getExternalStorageDirectory().getAbsolutePath()
                 + File.separator + foldername);
         if (!directory.exists()) {
-            directory.mkdirs();
+            if(!directory.mkdirs()){
+                throw new ChooserException("Chould not create directory = "+directory);
+            }
         }
         return directory.getAbsolutePath();
     }
 
-    public static String getFileExtension(String filename) {
-        String extension = "";
-        try {
-            extension = filename.substring(filename.lastIndexOf(".") + 1);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return extension;
+    public static String getFileExtension(String filename) throws ChooserException {
+       try {
+           return filename.substring(filename.lastIndexOf(".") + 1);
+       } catch (StringIndexOutOfBoundsException e) {
+           throw new ChooserException(e);
+       }
     }
 
 }

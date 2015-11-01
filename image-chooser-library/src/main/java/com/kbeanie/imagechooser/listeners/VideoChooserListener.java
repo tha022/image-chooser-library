@@ -14,21 +14,23 @@
  * limitations under the License.
  *******************************************************************************/
 
-package com.kbeanie.imagechooser.api;
+package com.kbeanie.imagechooser.listeners;
 
-public interface ImageChooserListener {
-    /**
-     * When the processing is complete, you will receive this callback with
-     * {@link ChosenImage}
-     * 
-     * @param image
-     */
-    public void onImageChosen(ChosenImage image);
+import com.kbeanie.imagechooser.models.ChosenVideo;
 
-    /**
-     * Handle any error conditions if at all, when you receieve this callback
-     * 
-     * @param reason
-     */
-    public void onError(String reason);
+public interface VideoChooserListener {
+	/**
+	 * When the processing is complete, you will receive this callback with
+	 * {@link ChosenVideo}
+	 * 
+	 * @param video
+	 */
+	void onVideoChosen(ChosenVideo video);
+
+	/**
+	 * Handle any error conditions if at all, when you receieve this callback
+	 * 
+	 * @param reason
+	 */
+	void onError(String reason);
 }

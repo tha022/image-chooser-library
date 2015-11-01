@@ -1,10 +1,9 @@
 package com.kbeanie.imagechooser.factory;
 
-import android.net.Uri;
-import android.provider.MediaStore;
 import android.util.Log;
 
-import com.kbeanie.imagechooser.api.FileUtils;
+import com.kbeanie.imagechooser.exceptions.ChooserException;
+import com.kbeanie.imagechooser.utils.FileUtils;
 
 import java.io.File;
 
@@ -33,15 +32,15 @@ public class UriFactory {
         this.filePathOriginal = filePathOriginal;
     }
 
-    public String getFilePathOriginal(String foldername) {
+    public String getFilePathOriginal(String foldername, String extension) throws ChooserException {
         if(filePathOriginal != null) {
             Log.d(TAG, "File path set. We return: "+filePathOriginal);
             return filePathOriginal;
         }
 
         return FileUtils.getDirectory(foldername)
-                + File.separator + DateFactory.getInstance().getTimeInMillis()
-                + ".jpg";
+                + File.separator + DateFactory.getInstance().getTimeInMillis() + "." + extension;
+                //+ ".jpg";
     }
 
     public void reset() {

@@ -25,4 +25,8 @@ public class ChooserException extends Exception {
     public ChooserException(IOException e) {
         super(e);
     }
+
+    public ChooserException(StringIndexOutOfBoundsException e) {
+        super(e);
+    }
 }

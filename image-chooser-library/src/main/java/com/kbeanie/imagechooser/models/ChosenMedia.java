@@ -1,5 +1,5 @@
 
-package com.kbeanie.imagechooser.api;
+package com.kbeanie.imagechooser.models;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -10,26 +10,27 @@ import java.lang.ref.SoftReference;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.ExifInterface;
+import android.net.Uri;
+
+import com.kbeanie.imagechooser.utils.FileUtils;
+import com.kbeanie.imagechooser.exceptions.ChooserException;
 
 public abstract class ChosenMedia {
 
-    protected SoftReference<Bitmap> getBitmap(String path) {
-        SoftReference<Bitmap> bitmap = null;
+    protected SoftReference<Bitmap> getBitmap(String path) throws ChooserException {
         try {
-            bitmap = new SoftReference<Bitmap>(BitmapFactory.decodeStream(new FileInputStream(
+            return new SoftReference<>(BitmapFactory.decodeStream(new FileInputStream(
                     new File(path))));
-
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            throw new ChooserException(e);
         }
-        return bitmap;
     }
 
-    public String getFileExtension(String path) {
+    public String getFileExtension(String path) throws ChooserException {
         return FileUtils.getFileExtension(path);
     }
     
-    protected String getWidth(String path){
+    protected String getWidth(String path) throws ChooserException {
         String width = "";
         try {
             ExifInterface exif = new ExifInterface(path);
@@ -38,12 +39,12 @@ public abstract class ChosenMedia {
                 width = Integer.toString(getBitmap(path).get().getWidth());
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new ChooserException(e);
         }
         return width;
     }
     
-    protected String getHeight(String path){
+    protected String getHeight(String path) throws ChooserException {
         String height = "";
         try {
             ExifInterface exif = new ExifInterface(path);
@@ -52,12 +53,22 @@ public abstract class ChosenMedia {
                 height = Integer.toString(getBitmap(path).get().getHeight());
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new ChooserException(e);
         }
         return height;
     }
 
-    public abstract String getMediaHeight();
+    public static Uri toFileUri(String filePath) {
+        return Uri.fromFile(new File(filePath));
+    }
+
+    public abstract String getMediaHeight() throws ChooserException;
     
-    public abstract String getMediaWidth();   
+    public abstract String getMediaWidth() throws ChooserException;
+
+    public abstract Uri getThumbUri();
+
+    public abstract Uri getMediaUri();
+
+    public abstract MediaType getMediaType();
 }

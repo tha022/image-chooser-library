@@ -14,15 +14,26 @@
  * limitations under the License.
  *******************************************************************************/
 
-package com.kbeanie.imagechooser.api;
+package com.kbeanie.imagechooser.models;
+
+
+import android.net.Uri;
+
+import com.kbeanie.imagechooser.exceptions.ChooserException;
 
 
 public class ChosenImage extends ChosenMedia {
+
+    private Uri imageUri;
     private String filePathOriginal;
 
-    private String fileThumbnail;
 
-    private String fileThumbnailSmall;
+    public ChosenImage(String filePathOriginal, Uri imageUri) {
+        this.filePathOriginal = filePathOriginal;
+        this.imageUri = imageUri;
+    }
+
+    // Getters and setters
 
     public String getFilePathOriginal() {
         return filePathOriginal;
@@ -32,34 +43,32 @@ public class ChosenImage extends ChosenMedia {
         this.filePathOriginal = filePathOriginal;
     }
 
-    public String getFileThumbnail() {
-        return fileThumbnail;
-    }
-
-    public void setFileThumbnail(String fileThumbnail) {
-        this.fileThumbnail = fileThumbnail;
-    }
-
-    public String getFileThumbnailSmall() {
-        return fileThumbnailSmall;
-    }
-
-    public void setFileThumbnailSmall(String fileThumbnailSmall) {
-        this.fileThumbnailSmall = fileThumbnailSmall;
+    public String getExtension() throws ChooserException {
+        return getFileExtension(filePathOriginal);
     }
 
     @Override
-    public String getMediaHeight() {
+    public String getMediaHeight() throws ChooserException {
         return getHeight(filePathOriginal);
     }
 
     @Override
-    public String getMediaWidth() {
+    public String getMediaWidth() throws ChooserException {
        return getWidth(filePathOriginal);
     }
-    
-    public String getExtension(){
-        return getFileExtension(filePathOriginal);
+
+    @Override
+    public Uri getMediaUri() {
+        return imageUri;
     }
 
+    @Override
+    public MediaType getMediaType() {
+        return MediaType.IMAGE;
+    }
+
+    @Override
+    public Uri getThumbUri() {
+        return imageUri;
+    }
 }
