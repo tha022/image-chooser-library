@@ -17,14 +17,20 @@
 package com.kbeanie.imagechooser.models;
 
 
+import android.net.Uri;
+
 import com.kbeanie.imagechooser.exceptions.ChooserException;
+
 
 public class ChosenImage extends ChosenMedia {
 
+    private Uri imageUri;
     private String filePathOriginal;
 
-    public ChosenImage(String filePathOriginal) {
+
+    public ChosenImage(String filePathOriginal, Uri imageUri) {
         this.filePathOriginal = filePathOriginal;
+        this.imageUri = imageUri;
     }
 
     // Getters and setters
@@ -37,6 +43,10 @@ public class ChosenImage extends ChosenMedia {
         this.filePathOriginal = filePathOriginal;
     }
 
+    public String getExtension() throws ChooserException {
+        return getFileExtension(filePathOriginal);
+    }
+
     @Override
     public String getMediaHeight() throws ChooserException {
         return getHeight(filePathOriginal);
@@ -46,9 +56,9 @@ public class ChosenImage extends ChosenMedia {
     public String getMediaWidth() throws ChooserException {
        return getWidth(filePathOriginal);
     }
-    
-    public String getExtension() throws ChooserException {
-        return getFileExtension(filePathOriginal);
-    }
 
+    @Override
+    public Uri getThumbUri() {
+        return imageUri;
+    }
 }

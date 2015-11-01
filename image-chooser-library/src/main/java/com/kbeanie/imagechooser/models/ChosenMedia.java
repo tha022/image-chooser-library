@@ -10,6 +10,7 @@ import java.lang.ref.SoftReference;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.ExifInterface;
+import android.net.Uri;
 
 import com.kbeanie.imagechooser.utils.FileUtils;
 import com.kbeanie.imagechooser.exceptions.ChooserException;
@@ -57,7 +58,13 @@ public abstract class ChosenMedia {
         return height;
     }
 
+    public static Uri toFileUri(String filePath) {
+        return Uri.fromFile(new File(filePath));
+    }
+
     public abstract String getMediaHeight() throws ChooserException;
     
     public abstract String getMediaWidth() throws ChooserException;
+
+    public abstract Uri getThumbUri();
 }

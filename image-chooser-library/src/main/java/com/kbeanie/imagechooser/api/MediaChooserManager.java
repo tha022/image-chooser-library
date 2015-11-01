@@ -22,6 +22,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
@@ -32,10 +33,13 @@ import com.kbeanie.imagechooser.helpers.MediaHelper;
 import com.kbeanie.imagechooser.listeners.MediaChooserListener;
 import com.kbeanie.imagechooser.models.ChooserType;
 import com.kbeanie.imagechooser.models.ChosenImage;
+import com.kbeanie.imagechooser.models.ChosenMedia;
 import com.kbeanie.imagechooser.models.ChosenVideo;
 import com.kbeanie.imagechooser.threads.VideoProcessorListener;
 import com.kbeanie.imagechooser.threads.VideoProcessorThread;
 import com.kbeanie.imagechooser.utils.MediaResourceUtils;
+
+import java.io.File;
 
 /**
  * Easy Media Chooser Library for Android Apps. Forget about coding workarounds
@@ -191,7 +195,7 @@ public class MediaChooserManager extends BChooser implements VideoProcessorListe
                 processImageFromGallery(data);
                 break;
             case ChooserType.REQUEST_CAPTURE_PICTURE:
-                onProcessedImage(new ChosenImage(filePathOriginal));
+                onProcessedImage(new ChosenImage(filePathOriginal, ChosenMedia.toFileUri(filePathOriginal)));
                 break;
             case ChooserType.REQUEST_PICK_VIDEO:
                 processVideoFromGallery(data);
@@ -214,7 +218,7 @@ public class MediaChooserManager extends BChooser implements VideoProcessorListe
                 onError("File path was null");
                 return;
             }
-            onProcessedImage(new ChosenImage(path));
+            onProcessedImage(new ChosenImage(path, Uri.parse(path)));
         } else {
             onError("Image Uri was null!");
         }
