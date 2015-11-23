@@ -48,12 +48,14 @@ public class VideoProcessorThread extends Thread {
 
     private VideoProcessorListener listener;
 
+    protected Context context;
     protected MediaResourceUtils mediaResourceUtils;
     protected String filePath;
     protected String foldername;
 
 
-    public VideoProcessorThread(MediaResourceUtils mediaResourceUtils, String filePath, String foldername) {
+    public VideoProcessorThread(Context context, MediaResourceUtils mediaResourceUtils, String filePath, String foldername) {
+        this.context = context;
         this.mediaResourceUtils = mediaResourceUtils;
         this.filePath = filePath;
         this.foldername = foldername;
@@ -94,7 +96,7 @@ public class VideoProcessorThread extends Thread {
         if (bitmap == null) {
             throw new ChooserException("Cant generate thumbnail for filePath = "+filePath);
         }
-        String thumbnailPath = FileUtils.getDirectory(foldername) + File.separator
+        String thumbnailPath = FileUtils.getDirectory(context, foldername) + File.separator
                 + Calendar.getInstance().getTimeInMillis() + ".jpg";
         File file = new File(thumbnailPath);
 

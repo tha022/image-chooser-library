@@ -106,7 +106,7 @@ public class MediaResourceUtils {
 
             verifyStream(path, inputStream);
 
-            String filePath = FileUtils.getDirectory(foldername) + File.separator
+            String filePath = FileUtils.getDirectory(context, foldername) + File.separator
                     + Calendar.getInstance().getTimeInMillis() + extension;
 
             outStream = new BufferedOutputStream(new FileOutputStream(filePath));
@@ -138,7 +138,7 @@ public class MediaResourceUtils {
 
         try {
 
-            String filePath = FileUtils.getDirectory(foldername) + File.separator
+            String filePath = FileUtils.getDirectory(context, foldername) + File.separator
                     + Calendar.getInstance().getTimeInMillis() + extension;
 
             ParcelFileDescriptor parcelFileDescriptor = context
@@ -238,7 +238,7 @@ public class MediaResourceUtils {
                     .openInputStream(Uri.parse(path));
             verifyStream(path, inputStream);
 
-            String filePath = FileUtils.getDirectory(foldername) + File.separator
+            String filePath = FileUtils.getDirectory(context, foldername) + File.separator
                     + Calendar.getInstance().getTimeInMillis() + extension;
 
             outStream = new BufferedOutputStream(new FileOutputStream(filePath));
@@ -296,7 +296,7 @@ public class MediaResourceUtils {
             return;
         }*/
         File directory;
-        directory = new File(FileUtils.getDirectory(foldername));
+        directory = new File(FileUtils.getDirectory(context, foldername));
         File[] files = directory.listFiles();
         long count = 0;
         if (files == null) {

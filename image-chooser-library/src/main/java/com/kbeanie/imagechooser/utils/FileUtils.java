@@ -18,19 +18,29 @@ package com.kbeanie.imagechooser.utils;
 
 import java.io.File;
 
+import android.content.Context;
+import android.content.ContextWrapper;
 import android.os.Environment;
+import android.util.Log;
 
 import com.kbeanie.imagechooser.exceptions.ChooserException;
 
 public class FileUtils {
+
+    final static String TAG = FileUtils.class.getSimpleName();
+
     /**
      * Returns the path of the folder specified in external storage
      * @param foldername
      * @return
      */
-    public static String getDirectory(String foldername) throws ChooserException {
-        File directory = new File(Environment.getExternalStorageDirectory().getAbsolutePath()
-                + File.separator + foldername);
+    public static String getDirectory(Context context, String foldername) throws ChooserException {
+
+        ContextWrapper cw = new ContextWrapper(context);
+        File directory = cw.getDir(foldername, Context.MODE_PRIVATE);
+        Log.d(TAG, "directory = "+directory);
+        //File directory = new File(Environment.getExternalStorageDirectory().getAbsolutePath()
+        //        + File.separator + foldername);
         if (!directory.exists()) {
             if(!directory.mkdirs()){
                 throw new ChooserException("Chould not create directory = "+directory);

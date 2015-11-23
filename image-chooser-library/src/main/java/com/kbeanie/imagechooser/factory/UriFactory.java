@@ -1,5 +1,6 @@
 package com.kbeanie.imagechooser.factory;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.kbeanie.imagechooser.exceptions.ChooserException;
@@ -27,18 +28,18 @@ public class UriFactory {
     }
 
 
-    public void setFilePathOriginal(String filePathOriginal) {
+    /*public void setFilePathOriginal(String filePathOriginal) {
         Log.d(TAG, "File path set. Is: " + filePathOriginal);
         this.filePathOriginal = filePathOriginal;
-    }
+    }*/
 
-    public String getFilePathOriginal(String foldername, String extension) throws ChooserException {
+    public String getFilePathOriginal(Context context, String foldername, String extension) throws ChooserException {
         if(filePathOriginal != null) {
             Log.d(TAG, "File path set. We return: "+filePathOriginal);
             return filePathOriginal;
         }
 
-        return FileUtils.getDirectory(foldername)
+        return FileUtils.getDirectory(context, foldername)
                 + File.separator + DateFactory.getInstance().getTimeInMillis() + "." + extension;
                 //+ ".jpg";
     }

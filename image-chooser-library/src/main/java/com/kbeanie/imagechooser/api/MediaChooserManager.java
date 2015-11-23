@@ -235,7 +235,7 @@ public class MediaChooserManager extends BChooser implements VideoProcessorListe
                 return;
             }
 
-            VideoProcessorThread thread = new VideoProcessorThread(
+            VideoProcessorThread thread = new VideoProcessorThread(getContext(),
                     new MediaResourceUtils(getContext()),
                     path, foldername);
             thread.setListener(this);
@@ -254,7 +254,7 @@ public class MediaChooserManager extends BChooser implements VideoProcessorListe
             path = filePathOriginal;
         }
 
-        VideoProcessorThread thread = new VideoProcessorThread(
+        VideoProcessorThread thread = new VideoProcessorThread(getContext(),
                 new MediaResourceUtils(getContext()),
                 path,
                 foldername);

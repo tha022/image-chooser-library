@@ -104,7 +104,7 @@ public abstract class BChooser {
 
     protected void checkDirectory() throws ChooserException {
         File directory;
-        directory = new File(FileUtils.getDirectory(foldername));
+        directory = new File(FileUtils.getDirectory(activity, foldername));
         if (!directory.exists()) {
             if(!directory.mkdirs() && !directory.isDirectory()) {
                 throw new ChooserException("Error creating directory: "+directory);
@@ -215,7 +215,7 @@ public abstract class BChooser {
     }
 
     protected String buildFilePathOriginal(String foldername, String extension) throws ChooserException {
-        return UriFactory.getInstance().getFilePathOriginal(foldername, extension);
+        return UriFactory.getInstance().getFilePathOriginal(activity, foldername, extension);
     }
 
     protected Uri buildCaptureUri(String filePathOriginal) {
