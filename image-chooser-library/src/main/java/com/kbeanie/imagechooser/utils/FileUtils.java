@@ -25,6 +25,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.os.Environment;
+import android.support.annotation.VisibleForTesting;
 import android.util.Log;
 
 import com.kbeanie.imagechooser.exceptions.ChooserException;
@@ -59,17 +60,36 @@ public class FileUtils {
         return directory.getAbsolutePath();
     }*/
 
+
+    private static File testTmpFile;
+
+    @VisibleForTesting
+    public static void setTestTmpFile(File testTmpFile) {
+        FileUtils.testTmpFile = testTmpFile;
+    }
+
+    @VisibleForTesting
+    public static void resetTestTmpFile() {
+        FileUtils.testTmpFile = null;
+    }
+
     public static File createTmpFile(String extension) throws ChooserException {
+
+        if(FileUtils.testTmpFile != null) {
+            Log.d(TAG, "In test mode, returning test tmp file = "+FileUtils.testTmpFile);
+            return FileUtils.testTmpFile;
+        }
+
         // Create an image file name
-        String timeStamp = DateFactory.getInstance().getTimeInMillis()+"";
-        String imageFileName =  timeStamp + "_";
+        //String timeStamp = DateFactory.getInstance().getTimeInMillis()+"";
+        String imageFileName =  "tmp_";
         File storageDir = Environment.getExternalStoragePublicDirectory(
                 getEnvFolder(extension));
         File image;
         try {
             image = File.createTempFile(
                     imageFileName, /* prefix */
-                    extension,     /* suffix */
+                    "."+extension, /* suffix */
                     storageDir     /* directory */
             );
         } catch (IOException e) {
