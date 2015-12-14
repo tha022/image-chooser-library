@@ -17,13 +17,19 @@
 package com.kbeanie.imagechooser.utils;
 
 import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.os.Environment;
 import android.util.Log;
 
 import com.kbeanie.imagechooser.exceptions.ChooserException;
+import com.kbeanie.imagechooser.factory.DateFactory;
+import static com.kbeanie.imagechooser.api.MediaChooserManager.*;
 
 public class FileUtils {
 
@@ -31,13 +37,17 @@ public class FileUtils {
 
     /**
      * Returns the path of the folder specified in external storage
-     * @param foldername
+     * @param
      * @return
      */
+    /*@SuppressLint("SetWorldWritable")
     public static String getDirectory(Context context, String foldername) throws ChooserException {
 
         ContextWrapper cw = new ContextWrapper(context);
         File directory = cw.getDir(foldername, Context.MODE_PRIVATE);
+        if(!directory.setWritable(true, false)) { // then we dont need to ask for the external storage permission.
+            throw new ChooserException("Could not set directory writable = "+directory);
+        }
         Log.d(TAG, "directory = "+directory);
         //File directory = new File(Environment.getExternalStorageDirectory().getAbsolutePath()
         //        + File.separator + foldername);
@@ -47,6 +57,61 @@ public class FileUtils {
             }
         }
         return directory.getAbsolutePath();
+    }*/
+
+    public static File createTmpFile(String extension) throws ChooserException {
+        // Create an image file name
+        String timeStamp = DateFactory.getInstance().getTimeInMillis()+"";
+        String imageFileName =  timeStamp + "_";
+        File storageDir = Environment.getExternalStoragePublicDirectory(
+                getEnvFolder(extension));
+        File image;
+        try {
+            image = File.createTempFile(
+                    imageFileName, /* prefix */
+                    extension,     /* suffix */
+                    storageDir     /* directory */
+            );
+        } catch (IOException e) {
+            throw new ChooserException(e);
+        }
+
+        // Save a file: path for use with ACTION_VIEW intents
+        //mCurrentPhotoPath = "file:" + image.getAbsolutePath();
+        Log.d(TAG, "Tmp file = "+image.getAbsolutePath());
+        return image;
+    }
+
+    public static String createTmpFilePath(String extension) throws ChooserException {
+        return createTmpFile(extension).getAbsolutePath();
+    }
+
+    public static File getTmpDir(String extension) {
+        return Environment.getExternalStoragePublicDirectory(
+                getEnvFolder(extension));
+    }
+
+    public static String getTmpDirString(String extension) {
+        return Environment.getExternalStoragePublicDirectory(
+                getEnvFolder(extension)).getAbsolutePath();
+    }
+
+    public static File getTmpDirPictures() {
+        return Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES);
+    }
+
+    public static File getTmpDirMovies() {
+        return Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_MOVIES);
+    }
+
+    private static String getEnvFolder(String extension) {
+        if(extension == null ||
+                extension.equals(IMAGE_EXTENSION)) {
+            return Environment.DIRECTORY_PICTURES;
+        }
+        return Environment.DIRECTORY_MOVIES;
     }
 
     public static String getFileExtension(String filename) throws ChooserException {

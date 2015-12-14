@@ -81,12 +81,17 @@ public class MediaResourceUtils {
                 .startsWith("content://com.android.internalstorage.documents")) {
             filePath = imageUri.toString();
         } else {
-            Cursor cursor = contentResolver.query(imageUri, proj,
-                    null, null, null);
-            cursor.moveToFirst();
-            filePath = cursor.getString(cursor
-                    .getColumnIndexOrThrow(MediaStore.MediaColumns.DATA));
-            cursor.close();
+            Cursor cursor = null;
+            try {
+                cursor = contentResolver.query(imageUri, proj,
+                        null, null, null);
+                if (cursor != null && cursor.moveToFirst()) {
+                    filePath = cursor.getString(cursor
+                            .getColumnIndexOrThrow(MediaStore.MediaColumns.DATA));
+                }
+            } finally {
+                closeSilent(cursor);
+            }
         }
 
         if (filePath == null && isDownloadsDocument(imageUri)) {
@@ -106,8 +111,9 @@ public class MediaResourceUtils {
 
             verifyStream(path, inputStream);
 
-            String filePath = FileUtils.getDirectory(context, foldername) + File.separator
-                    + Calendar.getInstance().getTimeInMillis() + extension;
+            // String filePath = FileUtils.getDirectory(context, foldername) + File.separator
+            //        + Calendar.getInstance().getTimeInMillis() + extension;
+            String filePath = FileUtils.createTmpFilePath(extension);
 
             outStream = new BufferedOutputStream(new FileOutputStream(filePath));
             byte[] buf = new byte[2048];
@@ -138,8 +144,10 @@ public class MediaResourceUtils {
 
         try {
 
-            String filePath = FileUtils.getDirectory(context, foldername) + File.separator
-                    + Calendar.getInstance().getTimeInMillis() + extension;
+            // String filePath = FileUtils.getDirectory(context, foldername) + File.separator
+            //        + Calendar.getInstance().getTimeInMillis() + extension;
+
+            String filePath = FileUtils.createTmpFilePath(extension);
 
             ParcelFileDescriptor parcelFileDescriptor = context
                     .getContentResolver().openFileDescriptor(Uri.parse(path),
@@ -238,8 +246,10 @@ public class MediaResourceUtils {
                     .openInputStream(Uri.parse(path));
             verifyStream(path, inputStream);
 
-            String filePath = FileUtils.getDirectory(context, foldername) + File.separator
-                    + Calendar.getInstance().getTimeInMillis() + extension;
+            // String filePath = FileUtils.getDirectory(context, foldername) + File.separator
+            //        + Calendar.getInstance().getTimeInMillis() + extension;
+            //String filePath = FileUtils.getTmpDirString(extension);
+            String filePath = FileUtils.createTmpFilePath(extension);
 
             outStream = new BufferedOutputStream(new FileOutputStream(filePath));
             byte[] buf = new byte[2048];
@@ -296,7 +306,8 @@ public class MediaResourceUtils {
             return;
         }*/
         File directory;
-        directory = new File(FileUtils.getDirectory(context, foldername));
+        //directory = new File(FileUtils.getDirectory(context, foldername));
+        directory = FileUtils.getTmpDir(extension);
         File[] files = directory.listFiles();
         long count = 0;
         if (files == null) {

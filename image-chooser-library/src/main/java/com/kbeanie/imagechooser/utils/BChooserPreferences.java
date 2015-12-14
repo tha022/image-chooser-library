@@ -23,7 +23,7 @@ public class BChooserPreferences {
     public void setFolderName(String folderName){
         SharedPreferences.Editor editor = preferences.edit();
         editor.putString(FOLDER_NAME, folderName);
-        editor.commit();
+        editor.apply();
     }
 
     public String getFolderName(){

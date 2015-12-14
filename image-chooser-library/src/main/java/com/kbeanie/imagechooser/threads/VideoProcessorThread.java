@@ -33,6 +33,7 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.kbeanie.imagechooser.api.MediaChooserManager;
 import com.kbeanie.imagechooser.helpers.MediaHelper;
 import com.kbeanie.imagechooser.models.ChosenVideo;
 import com.kbeanie.imagechooser.utils.FileUtils;
@@ -68,7 +69,7 @@ public class VideoProcessorThread extends Thread {
     @Override
     public void run() {
         try {
-            mediaResourceUtils.manageDirectoryCache("mp4", foldername);
+            //mediaResourceUtils.manageDirectoryCache(MediaChooserManager.VIDEO_EXTENSION, foldername);
             processVideo(filePath, foldername);
         } catch (Exception e) { // catch all, just to be sure we can send message back to listener in all circumenstances.
             Log.e(TAG, e.getMessage(), e);
@@ -96,16 +97,19 @@ public class VideoProcessorThread extends Thread {
         if (bitmap == null) {
             throw new ChooserException("Cant generate thumbnail for filePath = "+filePath);
         }
-        String thumbnailPath = FileUtils.getDirectory(context, foldername) + File.separator
+        /*String thumbnailPath = FileUtils.getDirectory(context, foldername) + File.separator
                 + Calendar.getInstance().getTimeInMillis() + ".jpg";
-        File file = new File(thumbnailPath);
+        File file = new File(thumbnailPath);*/
+
+        File file = FileUtils.createTmpFile(MediaChooserManager.IMAGE_EXTENSION);
 
         FileOutputStream stream = null;
         try {
             stream = new FileOutputStream(file);
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
 
-            return thumbnailPath;
+            //return thumbnailPath;
+            return file.getAbsolutePath();
         } catch(IOException e) {
             throw new ChooserException(e);
         } finally {

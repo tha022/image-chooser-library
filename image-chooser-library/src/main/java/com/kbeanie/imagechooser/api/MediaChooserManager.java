@@ -51,6 +51,9 @@ public class MediaChooserManager extends BChooser implements VideoProcessorListe
 
     private final static String TAG = MediaChooserManager.class.getSimpleName();
 
+    public static final String IMAGE_EXTENSION = "jpg";
+    public static final String VIDEO_EXTENSION = "mp4";
+
     private Handler handlerMainThread = new Handler(Looper.getMainLooper());
 
     private MediaChooserListener listener;
@@ -133,7 +136,7 @@ public class MediaChooserManager extends BChooser implements VideoProcessorListe
         checkDirectory();
         try {
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            String path = buildFilePathOriginal(foldername, "jpg");
+            String path = buildFilePathOriginal(foldername, IMAGE_EXTENSION);
             intent.putExtra(MediaStore.EXTRA_OUTPUT, buildCaptureUri(path));
             if (extras != null) {
                 intent.putExtras(extras);
@@ -160,7 +163,7 @@ public class MediaChooserManager extends BChooser implements VideoProcessorListe
         checkDirectory();
         try {
             Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
-            String path = buildFilePathOriginal(foldername, "mp4");
+            String path = buildFilePathOriginal(foldername, VIDEO_EXTENSION);
             intent.putExtra(MediaStore.EXTRA_OUTPUT, buildCaptureUri(path));
             if (extras != null) {
                 intent.putExtras(extras);

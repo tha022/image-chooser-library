@@ -1,12 +1,14 @@
 package com.kbeanie.imagechooser.factory;
 
 import android.content.Context;
+import android.os.Environment;
 import android.util.Log;
 
 import com.kbeanie.imagechooser.exceptions.ChooserException;
 import com.kbeanie.imagechooser.utils.FileUtils;
 
 import java.io.File;
+import java.util.Date;
 
 /**
  * Created by vervik on 9/27/15.
@@ -39,9 +41,9 @@ public class UriFactory {
             return filePathOriginal;
         }
 
-        return FileUtils.getDirectory(context, foldername)
-                + File.separator + DateFactory.getInstance().getTimeInMillis() + "." + extension;
-                //+ ".jpg";
+        return FileUtils.createTmpFile(extension).getAbsolutePath();
+        // return FileUtils.getDirectory(context, foldername)
+        //        + File.separator + DateFactory.getInstance().getTimeInMillis() + "." + extension;
     }
 
     public void reset() {

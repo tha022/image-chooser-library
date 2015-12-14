@@ -103,13 +103,13 @@ public abstract class BChooser {
     public abstract void submit(int requestCode, Intent data) throws ChooserException;
 
     protected void checkDirectory() throws ChooserException {
-        File directory;
+        /*File directory;
         directory = new File(FileUtils.getDirectory(activity, foldername));
         if (!directory.exists()) {
             if(!directory.mkdirs() && !directory.isDirectory()) {
                 throw new ChooserException("Error creating directory: "+directory);
             }
-        }
+        }*/
     }
 
     @SuppressLint("NewApi")
